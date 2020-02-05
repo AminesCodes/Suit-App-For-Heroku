@@ -99,6 +99,7 @@ router.get('/:username', async (request, response) => {
 
 // Log a registered user
 router.patch('/login', async (request, response) => {
+    console.log('LOGIN')
     let { password, email } = request.body
     
     if (!password || !email) {

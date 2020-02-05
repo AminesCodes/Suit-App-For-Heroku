@@ -12,6 +12,8 @@ const commentsRouter = require('./routes/comments');
 const reactionsRouter = require('./routes/reactions');
 const eventsRouter = require('./routes/events');
 
+const { userLoggedCheck } = require('./auth/helpers');
+
 const app = express();
 
 app.use(logger('dev'));
@@ -28,9 +30,9 @@ app.use('/&api&/comments', commentsRouter);
 app.use('/&api&/reactions', reactionsRouter);
 app.use('/&api&/events', eventsRouter);
 
-app.use('/api', (req, res) => { res.send('OK !!!') });
 app.use('*', (req, res) => {
   res.sendFile(path.resolve(__dirname, '../client/build/index.html'));
+  // res.send('OK');
 });
 
 // catch 404 and forward to error handler

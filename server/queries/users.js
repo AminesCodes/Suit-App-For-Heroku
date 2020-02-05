@@ -48,7 +48,6 @@ const getUserByUsername = async (username) => {
         const normalizedUsername = formatUsername(username.toLowerCase())
         const requestQuery = `SELECT * FROM users WHERE normalized_username = $1`
         const user = await db.one(requestQuery, normalizedUsername);
-        delete user.user_password;
         return user;
     } catch (err) {
         if (err.message === 'No data returned from the query.') {
