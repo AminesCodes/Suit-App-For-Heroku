@@ -1,0 +1,187 @@
+/*
+Sitewide Styling | Client | SUITAPP Web App
+GROUP 1: Amine Bensalem, Douglas MacKrell, Savita Madray, Joseph P. Pasaoa
+*/
+
+
+/* FONT INITS 
+font-family: 'AlegreyaSans-Black', sans-serif;
+font-family: 'Lato', sans-serif;
+*/
+@font-face {
+  font-family: 'AlegreyaSans-Black';
+  src: url('./assets/fonts/Alegreya_Sans/AlegreyaSans-Black.ttf') format('truetype');
+  font-weight: black;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Mukta';
+  src: url('./assets/fonts/Mukta/Mukta-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+/* @font-face {
+  font-family: 'Lato';
+  src: url('./assets/fonts/Lato/Lato-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}  */
+
+
+/* COLOR THEME
+white [gallery]: #f1efef
+cyan [bright turquiose]: #0cd6c9
+hot pink [shocking pink]: #f310c2
+purple [scarlet gum]: #391868
+lavender [rum]: #7d698d
+*/
+
+
+/* BASE APP STYLES */
+body {
+  background-color: #120920;
+}
+
+.App {
+  font-family: 'Mukta', sans-serif;
+  font-size: 0.9em;
+}
+
+button {
+  border-radius: 6px;
+}
+
+.j-jumbotron {
+  margin-bottom: 11rem;
+}
+
+.bg-appColor {
+  /* background-color: #391868; */
+  background: rgb(19,9,33);
+  background: linear-gradient(0deg, rgba(19,9,33,1) 13%, rgba(57,24,104,1) 100%);
+}
+
+.j-arrow-down {
+  margin: 0 auto;
+  color: #f1efef;
+  font-weight: bold;
+  font-family: 'AlegreyaSans-Black';
+  width: min-content;
+}
+
+.avatarImage {
+  display: block;
+  width: 100px;
+  height: 100px;
+  object-fit: scale-down;
+  border-radius: 50%;
+  border: solid black 1px
+}
+
+.squareAvatar {
+  display: block;
+  width: 50px;
+  height: width;
+  object-fit: scale-down;
+  border: solid black 1px,
+}
+
+.form-group {
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+
+.ph-area {
+  position: absolute;
+  top: 0;
+  padding: 7px 0 0 13px;
+  transition: all 200ms;
+  opacity: 0.5;
+  font-family: merienda;
+  color: black;
+}
+
+.form-control:focus + .ph-area,
+.form-control:valid + .ph-area {
+  transform: translate3d(0, -100%, 0);
+  opacity: 1;
+  color: #fff;
+}
+
+.right-text {
+  text-align: right;
+}
+
+.cursorPointer:hover {
+  cursor: pointer;
+}
+
+.icon {
+  z-index: 1;
+  height: 30px;
+  width: 30px;
+  padding: 5px;
+  cursor: pointer;
+  fill: red;
+}
+
+.timestampSpan {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  color: white;
+}
+
+a.nav-link {
+  color: white;
+}
+
+.nav-link:hover {
+  text-decoration: underline;
+  font-style: italic;
+  font-weight: bolder;
+  font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+@media (max-width: 800px) {
+  .wrapper{
+      width: 100%;
+  }
+}
+
+
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+/* JOEY'S HOLD
+
+h1.test1 {
+  font-family: 'AlegreyaSans-Black';
+  font-size: 14px;
+  color: #B8D1C9;
+  /* -webkit-text-stroke-width: 1px;
+  -webkit-text-stroke-color: black; * /
+  text-shadow:
+    0px 0px 0 #000,
+    -1px -1px 0 #000,  
+    1px -1px 0 #000,
+    -1px 1px 0 #000,
+    1px 1px 0 #000;
+}
+
+*/

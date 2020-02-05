@@ -1,0 +1,43 @@
+/*
+Routing Component Styling | Client | SUITAPP Web App
+GROUP 1: Amine Bensalem, Douglas MacKrell, Savita Madray, Joseph P. Pasaoa
+*/
+
+
+.col {
+  padding-right: 0px;
+  padding-left: 0px;
+}
+
+.row {
+  margin-right: 0px;
+  margin-left: 0px;
+}
+
+.maingrid {
+  padding-right: 0px;
+  padding-left: 0px;
+}
+
+.j-topbar {
+  height: 60px;
+  background-color: #8493c7; /* colors 1px border at bottom of topbar */
+}
+
+.j-stage {
+  overflow-y: auto;
+  height: calc(100vh - 60px);
+  background-color: #7d698d;
+  flex-wrap: nowrap;
+}
+
+.j-sidebar-container {
+  position: relative;
+}
+
+.j-col-2 {
+  padding-right: 0px;
+  padding-left: 0px;
+  flex: 0 0 160px;
+  min-width: 160px;
+}

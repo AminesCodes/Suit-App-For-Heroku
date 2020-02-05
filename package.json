@@ -1,0 +1,14 @@
+{
+  "name": "Suit-App-Deployment",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server/app.js",
+  "scripts": {
+    "start": "node ./server/bin/www",
+    "heroku-postbuild": "cd server && npm install && cd ../client && npm install && npm run build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

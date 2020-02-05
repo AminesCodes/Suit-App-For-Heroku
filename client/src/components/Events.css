@@ -1,0 +1,35 @@
+.Event-container {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.Event-list-item {
+    background-color: #F1EFEF;
+    margin: 40px;
+    padding: 10px;
+    border-radius: 10px;
+    width: 400px;
+    text-align: center;
+}
+
+.Event-name {
+    font-weight: bold;
+    font-size: x-large;
+    margin-bottom: 5px;
+    background-color: #0CD6C9;
+    padding: 5px;
+    border-radius: 10px;
+}
+
+.Event-date {
+    font-size: large;
+    display: inline-block;
+    margin-right: 20px;
+    margin-bottom: 10px;
+    margin-top: 10px;
+    font-weight: bolder;
+}
+
+.Event-minor {
+    font-weight: bolder;
+}

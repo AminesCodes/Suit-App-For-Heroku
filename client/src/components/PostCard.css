@@ -1,0 +1,231 @@
+/*
+PostCard Component Styling | Client | SUITAPP Web App
+GROUP 1: Amine Bensalem, Douglas MacKrell, Savita Madray, Joseph P. Pasaoa
+*/
+
+
+li.j-post-card {
+  display: block;
+  background: #F1EFEF;
+  box-shadow: 6px 4px 10px rgba(0, 0, 0, 0.25);
+  border-radius: 8px;
+  width: min-content;
+  margin: 50px 11px 40px 3px;
+  padding: 11px;
+  padding-bottom: 16px;
+
+  position: relative;
+}
+
+.j-post-userbox {
+  z-index: 100;
+  position: absolute;
+  top: 36px;
+  left: -22px;
+  padding: 11px;
+  border-radius: 16px;
+  
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  
+  /* border: solid 3px #513e6b;
+  background-color: #fff; */
+}
+
+.j-post-username {
+  background-color: #fff;
+  border: solid 2px #390288;
+  border-radius: 18px;
+  padding: 3px 11px 2px 11px;
+  text-align: center;
+}
+
+.j-post-avatar {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 18px;
+  margin-top: 2px;
+  margin-left: 1px;
+  border: solid 2px #390288;
+  position: relative;
+  top: -4px;
+}
+
+.j-post-grid {
+  display: grid;
+  /* grid-template-columns: 373px min-content; // made dynamic in Feed.jsx */
+  grid-template-rows: 63px 80px auto;
+  min-width: 589px;
+}
+
+.j-reaction-hold {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: flex-end;
+  margin-right: 16px;
+  align-items: flex-start;
+}
+
+.j-reaction-icon {
+  height: 20px;
+  margin: 2px 1px 0px 7px;
+}
+
+.j-reaction-icon-btn {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+
+  border-radius: 30px;
+  padding: 0px 2px 1px 0px;
+  margin-right: 5px;
+}
+
+.j-like-img {
+  position: relative;
+  top: -1px;
+}
+
+.j-reaction-icon-btn:hover {
+  box-shadow: 0px 2px 5px #f310c2;
+}
+
+.j-reaction-num {
+  color: #7d698d;
+  margin: 2px 1px;
+}
+
+.j-post-image-box {
+  grid-row: span 3;
+}
+
+.j-post-image {
+  height: 390px;
+  border-radius: 8px;
+  margin-right: 32px;
+
+  z-index: 80;
+  position: relative;
+  top: -25px;
+  left: 0px;
+}
+
+.j-post-banner-box {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 6px 16px 6px 100px;
+}
+
+.j-post-title {
+  text-shadow: 6px 4px 10px rgba(0, 0, 0, 0.45);
+
+  text-align: right;
+  font-family: 'AlegreyaSans-Black', sans-serif;
+  color: #000;
+  font-size: 2em;
+}
+
+.j-post-date {
+  color: #aaa;
+  padding: 9px 19px 6px 3px;
+  min-width: 180px;
+  margin-block-start: 0em;
+  margin-block-end: 0em;
+  text-align: right;
+}
+
+.j-post-caption {
+  padding: 6px 16px 6px 81px;
+  text-align: right;
+  font-size: 1.3em;
+  line-height: 1.3em;
+}
+
+/* .j-post-hashtags-box {
+  grid-column: span 2;
+} */
+
+.j-post-hr {
+  height: 2px;
+  width: auto;
+  background-color: #390288;
+  margin: 3px 15px;
+}
+
+.j-hash-date-line {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.j-post-hashtags {
+  padding: 6px 19px 6px 19px;
+  font-family: 'AlegreyaSans-Black', sans-serif;
+  color: #000;
+  font-size: 1.2em;
+  width: inherit;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.j-post-hashtag-link {
+  margin: 0px 3px;
+
+  color: #000;
+}
+
+.j-post-hashtag-link:hover {
+  color: #f310c2;
+}
+
+.j-post-comments-box > .row {
+  flex-wrap: nowrap;
+
+  margin-right: 34px;
+  margin-left: 162px;
+  padding: 3px 3px 6px 3px;
+  border-bottom: solid 1px #111;
+}
+
+.j-post-comments-box > .row > .col-sm-3 {
+  display: flex;
+  flex-direction: column-reverse;
+  flex-wrap: nowrap;
+  justify-content: flex-end;
+  min-width: 162px;
+}
+
+.j-post-comments-box > .row > .col-sm-3 > .p-2, .j-post-comments-box .m-2 {
+  padding: 3px 3px 3px 0px !important;
+  margin: 0px !important;
+}
+
+.j-post-comments-box .avatarImage {
+  width: 46px;
+  height: 46px;
+  object-fit: scale-down;
+  border-radius: 14px;
+}
+
+.j-comm-time {
+  color: #bbb;
+  display: inline-block;
+  margin-left: auto;
+}
+
+/* .j-post-show-comments-btn {
+  margin: 6px 15px 3px 15px;
+  width: -webkit-fill-available;
+} */
+
+.j-shadow {
+  box-shadow: 6px 4px 10px rgba(0, 0, 0, 0.45);
+}

@@ -1,0 +1,55 @@
+/*
+TopBar Component Styling | Client | SUITAPP Web App
+GROUP 1: Amine Bensalem, Douglas MacKrell, Savita Madray, Joseph P. Pasaoa
+*/
+
+
+.j-navbar {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-items: flex-end;
+
+  padding: 0px;
+  height: 60px;
+
+  background: rgb(19,9,33);
+  background: linear-gradient(0deg, rgba(19,9,33,1) 13%, rgba(57,24,104,1) 100%);
+}
+
+.j-navbar a {
+  padding-bottom: 0px;
+}
+
+.j-logo {
+  height: 52px;
+  padding: 0px;
+}
+
+.j-navbar form {
+  width: 340px;
+  margin: 3px 22px 4px auto;
+}
+
+div.mb-3 {
+  margin-bottom: 0.5rem!important;
+}
+
+.j-navbar span.input-group-text, .j-navbar input.form-control {
+  padding: .1rem .75rem 0em .75rem;
+  height: 1.5em;
+}
+
+.j-navbar span.input-group-text { /* hashtag left side */
+  padding-right: 0.4em;
+  padding-left: 0.4em;
+}
+
+.j-navbar span.input-group-text {
+  background-color: #B8D1C9;
+}
+
+.j-navbar input.form-control {
+  background-color: #f1efef;
+}
