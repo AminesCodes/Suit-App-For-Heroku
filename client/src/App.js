@@ -10,6 +10,7 @@ import { toast } from 'react-toastify';
 
 import './reset.css'; // stays before App.css
 import './App.css'; // this must stay before component imports
+import axios from 'axios'
 
 import LoginSigninForm from './components/LoginSigninForm';
 import Routing from './components/Routing';
@@ -27,6 +28,10 @@ export default class App extends Component {
     loggedUser: null,
     // loggedUserId: 0,
     // loggedUserUsername: '',
+  }
+
+  componentDidMount() {
+
   }
 
   shouldComponentUpdate(nextProps, nextState) {

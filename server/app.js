@@ -4,6 +4,8 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
+var session = require('express-session');
+var passport = require('./auth/passport')
 
 const usersRouter = require('./routes/users');
 const postsRouter = require('./routes/posts');
@@ -12,28 +14,39 @@ const commentsRouter = require('./routes/comments');
 const reactionsRouter = require('./routes/reactions');
 const eventsRouter = require('./routes/events');
 
-const { userLoggedCheck } = require('./auth/helpers');
+const { checkUserLogged } = require('./auth/helpers');
 
 const app = express();
 
 app.use(logger('dev'));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, '../client/build')));
+
+// app.use(express.static(path.join(__dirname, '../client/build')));
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/&api&/users', usersRouter);
-app.use('/&api&/posts', postsRouter);
-app.use('/&api&/follows', followsRouter);
-app.use('/&api&/comments', commentsRouter);
-app.use('/&api&/reactions', reactionsRouter);
-app.use('/&api&/events', eventsRouter);
+app.use(session({
+  secret: "NOT_A_GOOD_SECRET",
+  resave: false,
+  saveUninitialized: true
+}))
 
-app.use('*', (req, res) => {
-  res.sendFile(path.resolve(__dirname, '../client/build/index.html'));
-  // res.send('OK');
-});
+app.use(passport.initialize())
+app.use(passport.session())
+
+app.use('/&api&/users', usersRouter);
+app.use('/&api&/posts', checkUserLogged, postsRouter);
+app.use('/&api&/follows', checkUserLogged, followsRouter);
+app.use('/&api&/comments', checkUserLogged, commentsRouter);
+app.use('/&api&/reactions', checkUserLogged, reactionsRouter);
+app.use('/&api&/events', checkUserLogged, eventsRouter);
+
+// app.use('*', (req, res) => {
+//   res.sendFile(path.resolve(__dirname, '../client/build/index.html'));
+// });
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

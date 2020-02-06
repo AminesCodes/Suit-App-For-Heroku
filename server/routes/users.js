@@ -2,8 +2,10 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 
-const Users = require('../queries/users');
+const usersQueries = require('../queries/users');
 const { authenticateUser } = require('../queries/authentication')
+const authHelpers = require('../auth/helpers')
+const passport = require('../auth/passport')
 
 const storage = multer.diskStorage({
   destination: (request, file, cb) => {
@@ -40,9 +42,9 @@ const handleError = (response, err) => {
 }
 
 // GET ALL USERS
-router.get('/all', async (request, response) => {
+router.get('/all', authHelpers.checkUserLogged, async (request, response) => {
     try {
-        const allUsers = await Users.getAllUsers();
+        const allUsers = await usersQueries.getAllUsers();
         response.json({
             status: 'success',
             message: 'Successfully retrieved all users',
@@ -70,7 +72,7 @@ const handleResponse = (response, data) => {
     }
 }
 
-router.get('/:username', async (request, response) => {
+router.get('/:username', authHelpers.checkUserLogged, async (request, response) => {
     const username = request.params.username
     let userId = false
 
@@ -80,14 +82,14 @@ router.get('/:username', async (request, response) => {
 
     if (userId) {
         try {
-            const targetUser = await Users.getUserById(userId);
+            const targetUser = await usersQueries.getUserById(userId);
             handleResponse(response, targetUser)
         } catch (err) {
             handleError(response, err)
         }
     } else {
         try {
-            const targetUser = await Users.getUserByUsername(username);
+            const targetUser = await usersQueries.getUserByUsername(username);
             handleResponse(response, targetUser)
 
         } catch (err) {
@@ -96,43 +98,66 @@ router.get('/:username', async (request, response) => {
     }
 })
 
+// PASSPORT CONFIGURED FOR DEBUGGING PURPOSE
+const passportAuthentication = (request, response, next) => {
+    passport.authenticate('local', (err, user) => {
+        if (err) {
+            console.log('ERROR: ', err);
+            handleError(response, err)
+        } else if (!user) {
+            response.status(401).json({
+                status: 'fail',
+                message: 'Authentication issue',
+                payload: null,
+            })
+        } else {
+            next();
+        }
+    })(request, response);
+}
 
+router.post("/login", /*passportAuthentication*/passport.authenticate('local'), (request, response) => {
+    response.json({
+        status: 'success',
+        message: 'Successfully logged user',
+        payload: request.user,
+    })
+})
 // Log a registered user
-router.patch('/login', async (request, response) => {
-    console.log('LOGIN')
-    let { password, email } = request.body
+// router.post('/login', async (request, response) => {
+//     let { password, email } = request.body
     
-    if (!password || !email) {
-        response.status(400)
-        response.json({
-            status: 'fail',
-            message: 'Missing Information',
-            payload: null,
-        })
-    } else {
-        try {
-            const userToLog = await Users.logUser(email, password)
-            if (userToLog) {
-                response.json({
-                    status: 'success',
-                    message: 'Successfully logged user',
-                    payload: userToLog,
-                })
-            } else {
-                response.status(401)
-                response.json({
-                    status: 'fail',
-                    message: 'User Authentication Issue',
-                    payload: null,
-                })
-            }
-        } catch (err) {
-            handleError(response, err)
-        }
-    }
-})
+//     if (!password || !email) {
+//         response.status(400)
+//         response.json({
+//             status: 'fail',
+//             message: 'Missing Information',
+//             payload: null,
+//         })
+//     } else {
+//         try {
+//             const userToLog = await usersQueries.logUser(email, password)
+//             if (userToLog) {
+//                 response.json({
+//                     status: 'success',
+//                     message: 'Successfully logged user',
+//                     payload: userToLog,
+//                 })
+//             } else {
+//                 response.status(401)
+//                 response.json({
+//                     status: 'fail',
+//                     message: 'User Authentication Issue',
+//                     payload: null,
+//                 })
+//             }
+//         } catch (err) {
+//             handleError(response, err)
+//         }
+//     }
+// })
 
-
+ 
 router.post('/signup', async (request, response) => {
     const { username, firstname, lastname, password, email, ageCheck } = request.body
     if (!username || !firstname || !lastname || !password || !email || !ageCheck || ageCheck !== 'true') {
@@ -144,7 +169,8 @@ router.post('/signup', async (request, response) => {
             })
     } else {
         try {
-            const newUser = await Users.createUser(request.body)
+            request.body.password = await authHelpers.hashPassword(req.body.password)
+            const newUser = await usersQueries.createUser(request.body)
             response.status(201)
             response.json({
                 status: 'success',
@@ -168,8 +194,25 @@ router.post('/signup', async (request, response) => {
     }
 })
 
+router.get("/logout", authHelpers.checkUserLogged, (request, response) => {
+    request.logOut()
+    response.json({
+        status: 'success',
+        message: 'User logged out successfully',
+        payload: null,
+    })
+  })
+  
+router.get("/isUserLoggedIn", authHelpers.checkUserLogged, (request, response) => {
+    response.json({
+        status: 'success',
+        message: 'User is logged in. Session active',
+        payload: request.user,
+    })
+  })
 
-router.put('/:userId', upload.single('avatar'), async (request, response) => {
+
+router.put('/:userId', authHelpers.checkUserLogged, upload.single('avatar'), async (request, response) => {
     const userId = request.params.userId;
     const { username, firstname, lastname, password, email} = request.body
 
@@ -196,7 +239,7 @@ router.put('/:userId', upload.single('avatar'), async (request, response) => {
             const authorizedToUpdate = await authenticateUser(userId, password)
             if (authorizedToUpdate) {
                 try {
-                    const updatedUser = await Users.updateUserInfo(userId, request.body, avatarUrl)
+                    const updatedUser = await usersQueries.updateUserInfo(userId, request.body, avatarUrl)
                     response.json({
                         status: 'success',
                         message: 'Successfully update information',
@@ -241,7 +284,7 @@ router.put('/:userId', upload.single('avatar'), async (request, response) => {
 })
 
 
-router.patch('/:userId/password', async (request, response) => {
+router.patch('/:userId/password', authHelpers.checkUserLogged, async (request, response) => {
     const userId = request.params.userId;
     const { oldPassword, newPassword, confirmedPassword } = request.body
 
@@ -257,7 +300,7 @@ router.patch('/:userId/password', async (request, response) => {
             const authorizedToUpdate = await authenticateUser(userId, oldPassword)
             if (authorizedToUpdate) {
                 try {
-                    const updatedUser = await Users.updateUserPassword(userId, newPassword)
+                    const updatedUser = await usersQueries.updateUserPassword(userId, newPassword)
                     response.json({
                         status: 'success',
                         message: 'Successfully updated the password',
@@ -290,7 +333,7 @@ router.patch('/:userId/password', async (request, response) => {
     }
 })
 
-router.patch('/:userId/theme/:theme', async (request, response) => {
+router.patch('/:userId/theme/:theme', authHelpers.checkUserLogged, async (request, response) => {
     const { userId, theme } = request.params;
     const { password } = request.body;
 
@@ -306,7 +349,7 @@ router.patch('/:userId/theme/:theme', async (request, response) => {
             const authorizedToUpdate = await authenticateUser(userId, password)
             if (authorizedToUpdate) {
                 try {
-                    const updatedTheme = await Users.updateUserTheme(userId, theme)
+                    const updatedTheme = await usersQueries.updateUserTheme(userId, theme)
                     response.json({
                         status: 'success',
                         message: `Successfully updated the theme to ${theme}`,
@@ -348,7 +391,7 @@ router.patch('/:userId/theme/:theme', async (request, response) => {
 })
 
 
-router.patch('/:userId/delete', async (request, response) => {
+router.patch('/:userId/delete', authHelpers.checkUserLogged, async (request, response) => {
     const userId = request.params.userId;
     const { password } = request.body
 
@@ -364,7 +407,7 @@ router.patch('/:userId/delete', async (request, response) => {
             const authorizedToUpdate = await authenticateUser(userId, password)
             if (authorizedToUpdate) {
                 try {
-                    const deletedUser = await Users.deleteUser(userId)
+                    const deletedUser = await usersQueries.deleteUser(userId)
                     if (deletedUser) {
                         response.json({
                             status: 'success',

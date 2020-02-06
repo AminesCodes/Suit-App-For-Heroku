@@ -48,6 +48,7 @@ const getUserByUsername = async (username) => {
         const normalizedUsername = formatUsername(username.toLowerCase())
         const requestQuery = `SELECT * FROM users WHERE normalized_username = $1`
         const user = await db.one(requestQuery, normalizedUsername);
+        delete user.password
         return user;
     } catch (err) {
         if (err.message === 'No data returned from the query.') {
@@ -176,6 +177,18 @@ const deleteUser = async (userId) => {
     }
 }
 
+const getUserByEmail = async (email) => {
+    try {
+        email = email.toLowerCase();
+        const requestQuery = `
+        Select * FROM users WHERE email = $1
+        `
+        return await db.oneOrNone(requestQuery, email)
+    } catch (err) {
+        throw err;
+    }
+}
+
 const logUser = async (email, password) => {
     try {
         email = email.toLowerCase();
@@ -209,5 +222,6 @@ module.exports = {
     updateUserPassword,
     deleteUser,
     logUser,
-    updateUserTheme
+    getUserByEmail,
+    updateUserTheme,
   }

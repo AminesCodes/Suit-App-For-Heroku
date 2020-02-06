@@ -17,18 +17,18 @@ const comparePasswords = async (password, passwordDigest) => {
   }
 }
 
-const userLoggedCheck = (req, res, next) => {
-  console.log(req.session)
+const checkUserLogged = (req, res, next) => {
+  console.log('REQUEST.SESSION: ', req.session)
   if (req.user) return next()
   res.status(401).json({
+    status: 'fail',
+    message: "You need to be logged in to access this route",
     payload: null,
-    msg: "You need to be logged in to access this route",
-    err: true
   })
 }
 
 module.exports = {
   hashPassword,
   comparePasswords,
-  userLoggedCheck
+  checkUserLogged
 }
