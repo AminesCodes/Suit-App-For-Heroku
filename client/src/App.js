@@ -26,12 +26,25 @@ toast.configure();
 export default class App extends Component {
   state = {
     loggedUser: null,
+    loadingData: false,
     // loggedUserId: 0,
     // loggedUserUsername: '',
   }
 
-  componentDidMount() {
-
+  async componentDidMount() {
+    console.log('COMPONENT DIT MOUNT')
+    try {
+      this.setState({ loadingData: true })
+      const { data } = await axios.get('/&api&/users/isUserLoggedIn')
+      console.log('COMPONENT DIT MOUNT', data.payload)
+      this.setState({
+        loggedUser: data.payload,
+        loadingData: false
+      })
+    } catch (err) {
+      this.setState({ loadingData: false })
+      console.log('ERROR', err)
+    }
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -43,16 +56,17 @@ export default class App extends Component {
     sessionStorage.setItem('Suit_App_UId', user.id);
     sessionStorage.setItem('Suit_App_Un', user.username);
     
-    this.setState({
-      loggedUser: user,
-    });
+    this.setState({ loggedUser: user });
   }
 
-  handleLogOut = () => {
-    sessionStorage.clear();
-    this.setState({
-      loggedUser: null,
-    })
+  handleLogOut = async() => {
+    try {
+      await axios.get('/&api&/users/logout');
+      sessionStorage.clear();
+      this.setState({ loggedUser: null });
+    } catch (err) {
+      console.log('ERROR', err)
+    }
   }
 
 

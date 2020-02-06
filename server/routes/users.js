@@ -41,26 +41,12 @@ const handleError = (response, err) => {
     })
 }
 
-// GET ALL USERS
-router.get('/all', authHelpers.checkUserLogged, async (request, response) => {
-    try {
-        const allUsers = await usersQueries.getAllUsers();
-        response.json({
-            status: 'success',
-            message: 'Successfully retrieved all users',
-            payload: allUsers,
-        })
-    } catch (err) {
-        handleError(response, err)
-    }
-})
-
 const handleResponse = (response, data) => {
     if (data === 'no match') {
         response.status(444)
         response.json({
             status: 'fail',
-            message: `No match`,
+            message: `No match!`,
             payload: null,
         })
     } else {
@@ -71,32 +57,6 @@ const handleResponse = (response, data) => {
         })
     }
 }
-
-router.get('/:username', authHelpers.checkUserLogged, async (request, response) => {
-    const username = request.params.username
-    let userId = false
-
-    if (!isNaN(parseInt(username)) && username.length === (parseInt(username) + '').length) {
-        userId = username
-    }
-
-    if (userId) {
-        try {
-            const targetUser = await usersQueries.getUserById(userId);
-            handleResponse(response, targetUser)
-        } catch (err) {
-            handleError(response, err)
-        }
-    } else {
-        try {
-            const targetUser = await usersQueries.getUserByUsername(username);
-            handleResponse(response, targetUser)
-
-        } catch (err) {
-            handleError(response, err)
-        }
-    }
-})
 
 // PASSPORT CONFIGURED FOR DEBUGGING PURPOSE
 const passportAuthentication = (request, response, next) => {
@@ -194,22 +154,66 @@ router.post('/signup', async (request, response) => {
     }
 })
 
-router.get("/logout", authHelpers.checkUserLogged, (request, response) => {
+router.get("/logout", /*authHelpers.checkUserLogged,*/ (request, response) => {
     request.logOut()
     response.json({
         status: 'success',
         message: 'User logged out successfully',
         payload: null,
     })
-  })
+})
   
 router.get("/isUserLoggedIn", authHelpers.checkUserLogged, (request, response) => {
+    console.log('ROUTER, ISUSERLOGGEDIN: ', request.user)
     response.json({
         status: 'success',
         message: 'User is logged in. Session active',
         payload: request.user,
     })
-  })
+})
+
+
+// GET ALL USERS
+router.get('/all', authHelpers.checkUserLogged, async (request, response) => {
+    try {
+        const allUsers = await usersQueries.getAllUsers();
+        response.json({
+            status: 'success',
+            message: 'Successfully retrieved all users',
+            payload: allUsers,
+        })
+    } catch (err) {
+        handleError(response, err)
+    }
+})
+
+
+
+router.get('/:username', authHelpers.checkUserLogged, async (request, response) => {
+    const username = request.params.username
+    let userId = false
+
+    if (!isNaN(parseInt(username)) && username.length === (parseInt(username) + '').length) {
+        userId = username
+    }
+
+    if (userId) {
+        try {
+            const targetUser = await usersQueries.getUserById(userId);
+            handleResponse(response, targetUser)
+        } catch (err) {
+            handleError(response, err)
+        }
+    } else {
+        try {
+            const targetUser = await usersQueries.getUserByUsername(username);
+            handleResponse(response, targetUser)
+
+        } catch (err) {
+            handleError(response, err)
+        }
+    }
+})
 
 
 router.put('/:userId', authHelpers.checkUserLogged, upload.single('avatar'), async (request, response) => {

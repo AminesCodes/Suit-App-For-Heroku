@@ -18,7 +18,7 @@ const comparePasswords = async (password, passwordDigest) => {
 }
 
 const checkUserLogged = (req, res, next) => {
-  console.log('REQUEST.SESSION: ', req.session)
+  console.log('HELPERS CHECKUSERLOGGED: ', req.user)
   if (req.user) return next()
   res.status(401).json({
     status: 'fail',

@@ -46,7 +46,7 @@ export default class LoginSigninFrom extends React.PureComponent {
             }
             try {
                 this.setState({loading: true})
-                const { data } = await axios.patch('/&api&/users/login', user)
+                const { data } = await axios.post('/&api&/users/login', user)
 
                 this.setState({ loading: false })
                 this.props.formSubmit(data.payload, this.state.password)

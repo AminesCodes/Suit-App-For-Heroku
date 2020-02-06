@@ -25,7 +25,7 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use(cookieParser());
 
-// app.use(express.static(path.join(__dirname, '../client/build')));
+app.use(express.static(path.join(__dirname, '../client/build')));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(session({
@@ -44,9 +44,9 @@ app.use('/&api&/comments', checkUserLogged, commentsRouter);
 app.use('/&api&/reactions', checkUserLogged, reactionsRouter);
 app.use('/&api&/events', checkUserLogged, eventsRouter);
 
-// app.use('*', (req, res) => {
-//   res.sendFile(path.resolve(__dirname, '../client/build/index.html'));
-// });
+app.use('*', (req, res) => {
+  res.sendFile(path.resolve(__dirname, '../client/build/index.html'));
+});
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

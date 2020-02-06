@@ -26,12 +26,10 @@ passport.use(new LocalStrategy({usernameField: 'email', passwordField : 'passwor
 }))
 
 passport.serializeUser((user, done) => {
-  console.log('serializeUser')
   done(null, user)
 })
 
 passport.deserializeUser(async (user, done) => {
-  console.log('deserializeUser')
   try {
     let retrievedUser = await usersQueries.getUserByEmail(user.email)
     delete retrievedUser.password;
