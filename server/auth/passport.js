@@ -5,6 +5,7 @@ const usersQueries = require('../queries/users');
 
 passport.use(new LocalStrategy({usernameField: 'email', passwordField : 'password'}, 
   async (username, password, done) => {
+    console.log('EMAIL: ', username, '\nPASSWORD: ', password)
   try {
     const user = await usersQueries.getUserByEmail(username);
     if (!user) { // user not found in the database

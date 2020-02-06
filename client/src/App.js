@@ -41,6 +41,8 @@ export default class App extends Component {
         loggedUser: data.payload,
         loadingData: false
       })
+      sessionStorage.setItem('Suit_App_UId', data.payload.id);
+      sessionStorage.setItem('Suit_App_Un', data.payload.username);
     } catch (err) {
       this.setState({ loadingData: false })
       console.log('ERROR', err)
@@ -55,7 +57,6 @@ export default class App extends Component {
     sessionStorage.setItem('Suit_App_KS', password);
     sessionStorage.setItem('Suit_App_UId', user.id);
     sessionStorage.setItem('Suit_App_Un', user.username);
-    
     this.setState({ loggedUser: user });
   }
 

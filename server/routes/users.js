@@ -4,8 +4,8 @@ const multer = require('multer');
 
 const usersQueries = require('../queries/users');
 const { authenticateUser } = require('../queries/authentication')
-const authHelpers = require('../auth/helpers')
 const passport = require('../auth/passport')
+const { checkUserLogged, hashPassword } = require('../auth/helpers')
 
 const storage = multer.diskStorage({
   destination: (request, file, cb) => {
@@ -117,8 +117,7 @@ router.post("/login", /*passportAuthentication*/passport.authenticate('local'), 
 //     }
 // })
 
- 
-router.post('/signup', async (request, response) => {
+const signupUser = async (request, response, next) => {
     const { username, firstname, lastname, password, email, ageCheck } = request.body
     if (!username || !firstname || !lastname || !password || !email || !ageCheck || ageCheck !== 'true') {
         response.status(400)
@@ -129,14 +128,10 @@ router.post('/signup', async (request, response) => {
             })
     } else {
         try {
-            request.body.password = await authHelpers.hashPassword(req.body.password)
+            // request.body.password = await hashPassword(request.body.password)
             const newUser = await usersQueries.createUser(request.body)
-            response.status(201)
-            response.json({
-                status: 'success',
-                message: 'Successfully signed up',
-                payload: newUser,
-            })
+            next()
+
         } catch (err) {
             // Username/email already taken 
             if (err.code === "23505" && err.detail.includes("already exists")) {
@@ -152,9 +147,18 @@ router.post('/signup', async (request, response) => {
             }
         }
     }
+}
+ 
+router.post('/signup', signupUser, passport.authenticate('local'), (request, response) => {
+    response.status(201)
+    response.json({
+        status: 'success',
+        message: 'Successfully signed up',
+        payload: request.user,
+    })
 })
 
-router.get("/logout", /*authHelpers.checkUserLogged,*/ (request, response) => {
+router.get("/logout", /*checkUserLogged,*/ (request, response) => {
     request.logOut()
     response.json({
         status: 'success',
@@ -163,8 +167,7 @@ router.get("/logout", /*authHelpers.checkUserLogged,*/ (request, response) => {
     })
 })
   
-router.get("/isUserLoggedIn", authHelpers.checkUserLogged, (request, response) => {
-    console.log('ROUTER, ISUSERLOGGEDIN: ', request.user)
+router.get("/isUserLoggedIn", checkUserLogged, (request, response) => {
     response.json({
         status: 'success',
         message: 'User is logged in. Session active',
@@ -174,7 +177,7 @@ router.get("/isUserLoggedIn", authHelpers.checkUserLogged, (request, response) =
 
 
 // GET ALL USERS
-router.get('/all', authHelpers.checkUserLogged, async (request, response) => {
+router.get('/all', checkUserLogged, async (request, response) => {
     try {
         const allUsers = await usersQueries.getAllUsers();
         response.json({
@@ -189,7 +192,7 @@ router.get('/all', authHelpers.checkUserLogged, async (request, response) => {
 
 
 
-router.get('/:username', authHelpers.checkUserLogged, async (request, response) => {
+router.get('/:username', checkUserLogged, async (request, response) => {
     const username = request.params.username
     let userId = false
 
@@ -216,7 +219,7 @@ router.get('/:username', authHelpers.checkUserLogged, async (request, response) 
 })
 
 
-router.put('/:userId', authHelpers.checkUserLogged, upload.single('avatar'), async (request, response) => {
+const updateUser = async (request, response, next) => {
     const userId = request.params.userId;
     const { username, firstname, lastname, password, email} = request.body
 
@@ -231,7 +234,7 @@ router.put('/:userId', authHelpers.checkUserLogged, upload.single('avatar'), asy
         response.status(400)
             response.json({
                 status: 'fail',
-                message: 'Missing Information or invalid username',
+                message: 'Missing information or invalid username',
                 payload: null,
             })
     } else {
@@ -240,44 +243,17 @@ router.put('/:userId', authHelpers.checkUserLogged, upload.single('avatar'), asy
             avatarUrl = 'http://' + request.headers.host + '/images/avatars/' + request.file.filename
         } 
         try {
-            const authorizedToUpdate = await authenticateUser(userId, password)
-            if (authorizedToUpdate) {
-                try {
-                    const updatedUser = await usersQueries.updateUserInfo(userId, request.body, avatarUrl)
-                    response.json({
-                        status: 'success',
-                        message: 'Successfully update information',
-                        payload: updatedUser,
-                    })
-                } catch (err) {
-                    // Username/email already taken 
-                    if (err.code === "23505" && err.detail.includes("already exists")) {
-                        console.log('Attempt to update user information with a taken email/username')
-                        response.status(403)
-                        response.json({
-                            status: 'fail',
-                            message: 'Username already taken AND/OR email address already registered',
-                            payload: null,
-                        })
-                    } else {
-                        handleError(response, err)
-                    }
-                }
-            } else {
-                console.log('Authentication issue')
-                response.status(401)
-                response.json({
-                    status: 'fail',
-                    message: 'Authentication issue',
-                    payload: null,
-                })
-            }
+            await usersQueries.updateUserInfo(userId, request.body, avatarUrl)
+            next()
+            
         } catch (err) {
-            if (err.message === "No data returned from the query.") {
-                response.status(404)
+            // Username/email already taken 
+            if (err.code === "23505" && err.detail.includes("already exists")) {
+                console.log('Attempt to update user information with a taken email/username')
+                response.status(403)
                 response.json({
                     status: 'fail',
-                    message: 'User does not exist',
+                    message: 'Username already taken AND/OR email address already registered',
                     payload: null,
                 })
             } else {
@@ -285,10 +261,18 @@ router.put('/:userId', authHelpers.checkUserLogged, upload.single('avatar'), asy
             }
         }
     }
+}
+
+router.put('/:userId', checkUserLogged, upload.single('avatar'), updateUser, passport.authenticate('local'), (request, response) => {
+    response.json({
+        status: 'success',
+        message: 'Successfully update information',
+        payload: request.user,
+    })
 })
 
 
-router.patch('/:userId/password', authHelpers.checkUserLogged, async (request, response) => {
+const updatePassword = async (request, response, next) => {
     const userId = request.params.userId;
     const { oldPassword, newPassword, confirmedPassword } = request.body
 
@@ -301,88 +285,42 @@ router.patch('/:userId/password', authHelpers.checkUserLogged, async (request, r
             })
     } else {
         try {
-            const authorizedToUpdate = await authenticateUser(userId, oldPassword)
-            if (authorizedToUpdate) {
-                try {
-                    const updatedUser = await usersQueries.updateUserPassword(userId, newPassword)
-                    response.json({
-                        status: 'success',
-                        message: 'Successfully updated the password',
-                        payload: updatedUser,
-                    })
-                } catch (err) {
-                    handleError(response, err)
-                }
-            } else {
-                console.log('Authentication issue')
-                response.status(401)
-                response.json({
-                    status: 'fail',
-                    message: 'Authentication issue',
-                    payload: null,
-                })
-            }
+            // const password = hashPassword(newPassword)
+            // const updatedUser = await usersQueries.updateUserPassword(userId, password)
+            const updatedUser = await usersQueries.updateUserPassword(userId, newPassword)
+            request.body.password = newPassword
+            request.body.email = updatedUser.email
+            next()
+            
         } catch (err) {
-            if (err.message === "No data returned from the query.") {
-                response.status(404)
-                response.json({
-                    status: 'fail',
-                    message: 'User does not exist',
-                    payload: null,
-                })
-            } else {
-                handleError(response, err)
-            }
+            handleError(response, err)
         }
     }
+}
+
+router.patch('/:userId/password', checkUserLogged, updatePassword, passport.authenticate('local'), (request, response) => {
+    response.json({
+        status: 'success',
+        message: 'Successfully updated the password',
+        payload: request.user,
+    })
 })
 
-router.patch('/:userId/theme/:theme', authHelpers.checkUserLogged, async (request, response) => {
-    const { userId, theme } = request.params;
-    const { password } = request.body;
 
-    if (!password) {
-        response.status(400)
-            response.json({
-                status: 'fail',
-                message: 'Missing Information',
-                payload: null,
-            })
-    } else if (theme === 'dark' || theme === 'light') { 
+const updateTheme = async (request, response, next) => {
+    const { userId, theme } = request.params;
+    const password = request.body.password;
+
+    if ((theme === 'dark' || theme === 'light') && password) { 
         try {
-            const authorizedToUpdate = await authenticateUser(userId, password)
-            if (authorizedToUpdate) {
-                try {
-                    const updatedTheme = await usersQueries.updateUserTheme(userId, theme)
-                    response.json({
-                        status: 'success',
-                        message: `Successfully updated the theme to ${theme}`,
-                        payload: updatedTheme,
-                    })
-                } catch (err) {
-                    handleError(response, err)
-                }
-            } else {
-                console.log('Authentication issue')
-                response.status(401)
-                response.json({
-                    status: 'fail',
-                    message: 'Authentication issue',
-                    payload: null,
-                })
-            }
+            const updatedTheme = await usersQueries.updateUserTheme(userId, theme)
+            request.body.email = updatedTheme.email;
+            next();
+            
         } catch (err) {
-            if (err.message === "No data returned from the query.") {
-                response.status(404)
-                response.json({
-                    status: 'fail',
-                    message: 'User does not exist',
-                    payload: null,
-                })
-            } else {
-                handleError(response, err)
-            }
+            handleError(response, err)
         }
+
     } else {
         console.log('Invalid route for changing the theme')
         response.status(404)
@@ -392,10 +330,17 @@ router.patch('/:userId/theme/:theme', authHelpers.checkUserLogged, async (reques
             payload: null,
         })
     }
+}
+router.patch('/:userId/theme/:theme', checkUserLogged, updateTheme, passport.authenticate('local'), async (request, response) => {
+    response.json({
+        status: 'success',
+        message: `Successfully updated the theme to ${theme}`,
+        payload: request.user,
+    })
 })
 
 
-router.patch('/:userId/delete', authHelpers.checkUserLogged, async (request, response) => {
+router.patch('/:userId/delete', checkUserLogged, async (request, response) => {
     const userId = request.params.userId;
     const { password } = request.body
 
@@ -408,47 +353,24 @@ router.patch('/:userId/delete', authHelpers.checkUserLogged, async (request, res
             })
     } else {
         try {
-            const authorizedToUpdate = await authenticateUser(userId, password)
-            if (authorizedToUpdate) {
-                try {
-                    const deletedUser = await usersQueries.deleteUser(userId)
-                    if (deletedUser) {
-                        response.json({
-                            status: 'success',
-                            message: 'Successfully delete user',
-                            payload: deletedUser,
-                        })
-                    } else {
-                        response.status(401)
-                        response.json({
-                            status: 'fail',
-                            message: 'Invalid user',
-                            payload: null,
-                        })
-                    }
-                } catch (err) {
-                    handleError(response, err)
-                }
+            const deletedUser = await usersQueries.deleteUser(userId)
+            if (deletedUser) {
+                request.logOut()
+                response.json({
+                    status: 'success',
+                    message: 'Successfully delete user',
+                    payload: deletedUser,
+                })
             } else {
-                console.log('Authentication issue')
                 response.status(401)
                 response.json({
                     status: 'fail',
-                    message: 'Authentication issue',
+                    message: 'Invalid user',
                     payload: null,
                 })
             }
         } catch (err) {
-            if (err.message === "No data returned from the query.") {
-                response.status(404)
-                response.json({
-                    status: 'fail',
-                    message: 'User does not exist',
-                    payload: null,
-                })
-            } else {
-                handleError(response, err)
-            }
+            handleError(response, err)
         }
     }
 })
