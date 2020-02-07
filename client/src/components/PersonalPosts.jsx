@@ -45,7 +45,7 @@ export default class PersonalPosts extends React.Component {
         if (userId) {
             try {
                 const { data } = await axios.get(`/&api&/posts/userid/${userId}`)
-                this.setState({ userPosts: data.payload })
+                this.setState({ userPosts: data.payload, displayTargetPost: false })
             } catch (err) {
                 handleNetworkErrors(err)
             }
@@ -61,8 +61,8 @@ export default class PersonalPosts extends React.Component {
 
     componentDidUpdate(prevProps, prevState) {
         if (prevProps.userId !== this.props.userId) {
-            this.setState({userId: this.props.userId, displayTargetPost: false})
-            this.getUserPosts(this.props.userId,)
+            this.setState({ userId: this.props.userId })
+            this.getUserPosts(this.props.userId)
         }
     }
 
@@ -117,7 +117,6 @@ export default class PersonalPosts extends React.Component {
             const { data } = await axios.patch(`/&api&/posts/delete/${postId}`, user)
             if (data.status === 'success') {
                 this.getUserPosts(this.state.userId)
-                this.setState({displayTargetPost: false})
             }
         } catch (err) {
             handleNetworkErrors(err)

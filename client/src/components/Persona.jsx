@@ -62,11 +62,10 @@ export default class Persona extends Component {
       })
 
       const promises = []
-      promises.push(axios.get(`/&api&/follows/followers/${data.payload.id}`))
+      promises.push(axios.get(`/&api&/follows/followers/${data.payload.id}`)) //ALL USERS FOLLOWING TARGET USER
       
-      const currentUserId = sessionStorage.getItem('Suit_App_UId')
-      const currentUsername = sessionStorage.getItem('Suit_App_Un')
-      promises.push(axios.get(`/&api&/follows/${currentUserId}`))
+      const currentUserId = this.props.loggedUserId
+      promises.push(axios.get(`/&api&/follows/${currentUserId}`)) //ALL USERS TARGET USER IS FOLLOWING 
 
       const [ allFollowersData, allCurrentUserFollowingsData ] = await Promise.all(promises)
 
@@ -85,7 +84,7 @@ export default class Persona extends Component {
           break
         }
       }
-      if (targetUser === currentUsername) {
+      if (data.payload.id === currentUserId) {
         isUserFollowing = true
       }
       
@@ -122,12 +121,10 @@ export default class Persona extends Component {
   }
 
   handleFollowButton = async () => {
-    const currentUserId = sessionStorage.getItem('Suit_App_UId')
-    const pw = sessionStorage.getItem('Suit_App_KS')
     const targetUserId = this.state.userId
 
     try {
-      const { data } = await axios.post(`/&api&/follows/add/${currentUserId}/${targetUserId}`, {password: pw})
+      const { data } = await axios.post(`/&api&/follows/add/${this.props.loggedUserId}/${targetUserId}`)
       if (data.status === 'success') {
         this.setState({ isUserFollowing: true })
       }
@@ -166,7 +163,13 @@ export default class Persona extends Component {
                 </div>
             </div>
         </div>
-        <PersonalPosts className='row' userId={this.state.userId} allowedToEdit={this.state.userId+'' === uId+''} active={true}/>
+        <PersonalPosts 
+          className='row' 
+          userId={this.state.userId} 
+          loggedUserId = {this.props.loggedUserId}
+          allowedToEdit={this.state.userId === this.props.loggedUserId} 
+          active={true}
+        />
    </div>
     );
   }

@@ -54,12 +54,8 @@ router.post("/add/:currUserId/:targetUserId", async (req, res, next) => {
       if (currUserId === targetUserId) {
         throw new Error("400__error: current and target user_ids are identical")
       }
-      const password = processInput(req, "password");
-      const [ authorized ] = await Promise.all([
-        getAuth(currUserId, password),
-        checkFollowAlreadyExists(currUserId, targetUserId)
-      ]);
-      if (authorized) {
+      
+      if (currUserId === req.user.id) {
         const response = await createFollow(currUserId, targetUserId);
         res.json({
             status: "success",
@@ -78,10 +74,9 @@ router.post("/add/:currUserId/:targetUserId", async (req, res, next) => {
 router.patch("/delete/:currUserId/:targetUserId", async (req, res, next) => {
     try {
       const currUserId = processInput(req, "currUserId");
-      const targetUserId = processInput(req, "targetUserId");
-      const password = processInput(req, "password");
-      const authorized = await getAuth(currUserId, password);
-      if (authorized) {
+      const targetUserId = processInput(req, "targetUserId");;
+      
+      if (currUserId === req.user.id) {
         const response = await deleteFollow(currUserId, targetUserId);
         res.json({
             status: "success",
