@@ -54,6 +54,7 @@ export default class Feed extends PureComponent {
 
   // ############## RENDER ################
   render() {
+    console.log(this.props)
     const postsList = this.state.posts.map(post => {
 
         // CREATE HASHTAGS COMPONENTS
@@ -83,8 +84,8 @@ export default class Feed extends PureComponent {
 
         return(
             <PostCard
-              key={post.id} 
-              currUsername={this.props.currUsername} 
+              key={post.id}
+              loggedUserId={this.props.loggedUserId}  
               postId={post.id} 
               username={post.username} 
               avatar_url={post.avatar_url} 

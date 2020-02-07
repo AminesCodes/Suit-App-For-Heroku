@@ -87,7 +87,7 @@ export default class PostCard extends Component {
         const url = `/&api&/reactions/add/post/${this.props.postId}`;
         const postBody = {
           password: this.pw,
-          reactorId: this.uId + '',
+          reactorId: this.props.loggedUserId + '',
           emojiType: 1
         }
         const response = await axios.post(url, postBody);
@@ -96,7 +96,7 @@ export default class PostCard extends Component {
         const url = `/&api&/reactions/delete/${this.state.currUserLikeId}`;
         const postBody = {
           password: this.pw,
-          reactorId: this.uId + ''
+          reactorId: this.props.loggedUserId + ''
         }
         const response = await axios.patch(url, postBody);
         this.setState({ currUserLikeId: null });

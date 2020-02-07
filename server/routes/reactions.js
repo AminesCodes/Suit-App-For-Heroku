@@ -182,7 +182,7 @@ router.post('/add/post/:postId', async (request, response) => {
     const { reactorId, emojiType } = request.body;
     const validPostId = isValidId(postId);
     const validReactorId = isValidId(reactorId);
-
+    
     if (!validPostId || !validReactorId) {
         response.status(404)
         response.json({
@@ -190,9 +190,10 @@ router.post('/add/post/:postId', async (request, response) => {
             message: 'Wrong route',
             payload: null,
         })
+        
     } else {
         try {
-            if (reactorId !== req.user.id) {
+            if (parseInt(reactorId) !== request.user.id) {
                 response.status(401)
                     response.json({
                         status: 'fail',
@@ -235,7 +236,7 @@ router.post('/add/comment/:commentId', async (request, response) => {
         })
     } else {
         try {
-            if (reactorId !== req.user.id) {
+            if (parseInt(reactorId) !== request.user.id) {
                 response.status(401)
                     response.json({
                         status: 'fail',
@@ -278,7 +279,7 @@ router.patch('/delete/:reactionId', async (request, response) => {
         })
     } else {
         try {
-            if (reactorId !== req.user.id) {
+            if (parseInt(reactorId) !== request.user.id) {
                 response.status(401)
                     response.json({
                         status: 'fail',
