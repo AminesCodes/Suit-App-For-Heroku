@@ -248,7 +248,6 @@ export default class Account extends React.PureComponent {
 
     // ############ RENDER ############
     render() {
-        console.log(this.props.user)
         let content =
             <div className='spinner-border m-5' role='status'>
                 <span className='sr-only  text-center'>Loading...</span>
@@ -305,6 +304,7 @@ export default class Account extends React.PureComponent {
                         active = {this.state.postsTab}
                         handleTabSelection = {this.handleTabSelection}
                         userId = {this.state.id}
+                        loggedUserId = {this.props.loggedUserId}
                         allowedToEdit={this.state.id === this.props.loggedUserId} // NEED TO BE REVIEWED
                         {...props} /> )} 
                     />

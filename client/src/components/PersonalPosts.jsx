@@ -59,10 +59,10 @@ export default class PersonalPosts extends React.Component {
         this.getUserPosts(this.state.userId)
     }
 
-    async componentDidUpdate(prevProps, prevState) {
+    componentDidUpdate(prevProps, prevState) {
         if (prevProps.userId !== this.props.userId) {
-            await this.setState({userId: this.props.userId, displayTargetPost: false})
-            await this.getUserPosts(this.state.userId)
+            this.setState({userId: this.props.userId, displayTargetPost: false})
+            this.getUserPosts(this.props.userId,)
         }
     }
 
@@ -85,11 +85,8 @@ export default class PersonalPosts extends React.Component {
         event.preventDefault()
 
         try {
-            const pw = sessionStorage.getItem('Suit_App_KS')
-            const uId = sessionStorage.getItem('Suit_App_UId')
             const requestBody = {
-                password: pw,
-                currUserId: uId,
+                currUserId: this.props.loggedUserId,
                 title: this.state.targetPostTitle,
                 caption: this.state.targetPostCaption,
             }
@@ -114,10 +111,8 @@ export default class PersonalPosts extends React.Component {
 
     handleDeletePost = async (postId) => {
         try {
-            const pw = sessionStorage.getItem('Suit_App_KS')
             const user = {
-                password: pw,
-                currUserId: this.state.userId,
+                currUserId: this.props.loggedUserId,
             }
             const { data } = await axios.patch(`/&api&/posts/delete/${postId}`, user)
             if (data.status === 'success') {
@@ -137,18 +132,43 @@ export default class PersonalPosts extends React.Component {
     render() {
         let post = null
         if (this.state.displayTargetPost) {
-            post = <PostLightBox userId={this.state.userId} postId={this.state.targetPostId} allowedToEdit={this.props.allowedToEdit} title={this.state.targetPostTitle} caption={this.state.targetPostCaption} image={this.state.targetPost.image_url} timestamp={this.state.targetPost.time_created} handleClosePost={this.handleClosePost} handleDeletePost={this.handleDeletePost} handleTitleInput={this.handleTitleInput} handleCaptionInput={this.handleCaptionInput} handleForm={this.handleForm}/>
+            post = <PostLightBox 
+                        userId={this.state.userId} 
+                        loggedUserId={this.props.loggedUserId}
+                        postId={this.state.targetPostId} 
+                        allowedToEdit={this.props.allowedToEdit} 
+                        title={this.state.targetPostTitle} 
+                        caption={this.state.targetPostCaption} 
+                        image={this.state.targetPost.image_url} 
+                        timestamp={this.state.targetPost.time_created} 
+                        handleClosePost={this.handleClosePost} 
+                        handleDeletePost={this.handleDeletePost} 
+                        handleTitleInput={this.handleTitleInput} 
+                        handleCaptionInput={this.handleCaptionInput} 
+                        handleForm={this.handleForm}
+                    />
         }
 
         let uploadPost = null
         if (this.props.allowedToEdit) {
-            uploadPost = <UploadPost userId={this.state.userId} reloadPosts={this.reloadPosts}/>
+            uploadPost = <UploadPost 
+                        userId={this.props.loggedUserId} 
+                        reloadPosts={this.reloadPosts}
+                    />
         }
         return (
             <div className={`container tab-pane ${this.props.active}`}>
                 <div className='d-flex flex-wrap'>
                     {uploadPost}
-                    {this.state.userPosts.map((post, index) => <PostThumbnail index={index} key={post.image_url+post.time_created} id={post.id} image={post.image_url} tags={post.hashtag_str} handlePicClick={this.handlePicClick}/>)}
+                    {this.state.userPosts.map((post, index) => 
+                        <PostThumbnail 
+                            key={post.image_url+post.time_created} 
+                            index={index} 
+                            id={post.id} 
+                            image={post.image_url} 
+                            tags={post.hashtag_str} 
+                            handlePicClick={this.handlePicClick}
+                        />)}
                 </div>
                 {post}
             </div>

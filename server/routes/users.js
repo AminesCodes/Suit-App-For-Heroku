@@ -77,10 +77,12 @@ const passportAuthentication = (request, response, next) => {
 }
 
 router.post("/login", /*passportAuthentication*/passport.authenticate('local'), (request, response) => {
+    const user = request.user
+    delete user.user_password
     response.json({
         status: 'success',
         message: 'Successfully logged user',
-        payload: request.user,
+        payload: user,
     })
 })
 // Log a registered user
@@ -150,11 +152,13 @@ const signupUser = async (request, response, next) => {
 }
  
 router.post('/signup', signupUser, passport.authenticate('local'), (request, response) => {
+    const user = request.user
+    delete user.user_password
     response.status(201)
     response.json({
         status: 'success',
         message: 'Successfully signed up',
-        payload: request.user,
+        payload: user,
     })
 })
 
@@ -168,10 +172,12 @@ router.get("/logout", /*checkUserLogged,*/ (request, response) => {
 })
   
 router.get("/isUserLoggedIn", checkUserLogged, (request, response) => {
+    const user = request.user
+    delete user.user_password
     response.json({
         status: 'success',
         message: 'User is logged in. Session active',
-        payload: request.user,
+        payload: user,
     })
 })
 
@@ -264,10 +270,12 @@ const updateUser = async (request, response, next) => {
 }
 
 router.put('/:userId', checkUserLogged, upload.single('avatar'), updateUser, passport.authenticate('local'), (request, response) => {
+    const user = request.user
+    delete user.user_password
     response.json({
         status: 'success',
         message: 'Successfully update information',
-        payload: request.user,
+        payload: user,
     })
 })
 
@@ -299,10 +307,12 @@ const updatePassword = async (request, response, next) => {
 }
 
 router.patch('/:userId/password', checkUserLogged, updatePassword, passport.authenticate('local'), (request, response) => {
+    const user = request.user
+    delete user.user_password
     response.json({
         status: 'success',
         message: 'Successfully updated the password',
-        payload: request.user,
+        payload: user,
     })
 })
 
@@ -332,10 +342,12 @@ const updateTheme = async (request, response, next) => {
     }
 }
 router.patch('/:userId/theme/:theme', checkUserLogged, updateTheme, passport.authenticate('local'), async (request, response) => {
+    const user = request.user
+    delete user.user_password
     response.json({
         status: 'success',
-        message: `Successfully updated the theme to ${theme}`,
-        payload: request.user,
+        message: `Successfully updated the theme`,
+        payload: user,
     })
 })
 

@@ -35,7 +35,6 @@ export default class PostLightBox extends React.PureComponent {
     state = {
         comments: [],
         reactions: [],
-        displayComments: false,
         showComments: false,
         newComment: '',
     }
@@ -64,6 +63,7 @@ export default class PostLightBox extends React.PureComponent {
     handleShowComments = () => {
         this.setState({showComments: true})
     }
+
     handleCloseComments = () => {
         this.setState({showComments: false})
     }
@@ -72,13 +72,10 @@ export default class PostLightBox extends React.PureComponent {
         event.preventDefault()
 
         try {
-            const pw = sessionStorage.getItem('Suit_App_KS')
-            const uId = sessionStorage.getItem('Suit_App_UId')
             const requestBody = {
-                password: pw,
                 body: this.state.newComment,
             }
-            const { data } = await axios.post(`/&api&/comments/${this.props.postId}/${uId}`, requestBody)
+            const { data } = await axios.post(`/&api&/comments/${this.props.postId}/${this.props.loggedUserId}`, requestBody)
             if (data.status === 'success') {
                 this.getAllCommentsAndReactions(this.props.postId)
                 this.setState({newComment: ''})
@@ -110,10 +107,9 @@ export default class PostLightBox extends React.PureComponent {
             objectFit: 'scale-down',
         }
  
-        const uId = parseInt(sessionStorage.getItem('Suit_App_UId'))
         let commentsContainer = null
         if (this.state.showComments) {
-            commentsContainer = <Comments userId={uId} postId={this.props.postId} allComments={this.state.comments} handleCloseComments={this.handleCloseComments} handleCommentInput={this.handleCommentInput} commentText={this.state.newComment} handleAddCommentForm={this.handleAddCommentForm} reloadComments={this.getAllCommentsAndReactions}/>
+            commentsContainer = <Comments loggedUserId={this.props.loggedUserId} postId={this.props.postId} allComments={this.state.comments} handleCloseComments={this.handleCloseComments} handleCommentInput={this.handleCommentInput} commentText={this.state.newComment} handleAddCommentForm={this.handleAddCommentForm} reloadComments={this.getAllCommentsAndReactions}/>
         }
     
         let trashCanIcon = null

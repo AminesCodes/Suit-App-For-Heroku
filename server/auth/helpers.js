@@ -17,9 +17,9 @@ const comparePasswords = async (password, passwordDigest) => {
   }
 }
 
-const checkUserLogged = (req, res, next) => {
-  if (req.user) return next()
-  res.status(401).json({
+const checkUserLogged = (request, response, next) => {
+  if (request.user) return next()
+  response.status(401).json({
     status: 'fail',
     message: "You need to be logged in to access this route",
     payload: null,

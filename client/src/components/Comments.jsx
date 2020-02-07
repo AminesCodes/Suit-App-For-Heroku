@@ -42,7 +42,7 @@ export default class Comments extends React.PureComponent {
                     </div>
                     <textarea className='rounded flex-grow-1' id='newComment' value={this.props.commentText} onChange={e => this.props.handleCommentInput(e)}></textarea>
                 </form>
-                {this.props.allComments.map(comment => <CommentCard key={comment.comment_id + comment.username} postId={this.props.postId} commentId={comment.comment_id} avatar={comment.avatar_url} username={comment.username} comment={comment.comment_body} timestamp={comment.time_created} userId={this.props.userId} commenterId={comment.commenter_id} reloadComments={this.props.reloadComments} />)}
+                {this.props.allComments.map(comment => <CommentCard key={comment.comment_id + comment.username} postId={this.props.postId} commentId={comment.comment_id} avatar={comment.avatar_url} username={comment.username} comment={comment.comment_body} timestamp={comment.time_created} loggedUserId={this.props.loggedUserId} commenterId={comment.commenter_id} reloadComments={this.props.reloadComments} />)}
             </div>
         )
     }

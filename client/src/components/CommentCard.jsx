@@ -36,7 +36,7 @@ const handleNetworkErrors = err => {
 export default class CommentCard extends React.PureComponent {
     state = {
         comment: this.props.comment,
-        isEditable: this.props.userId === this.props.commenterId,
+        isEditable: this.props.loggedUserId === this.props.commenterId,
         showForm: false,
     }
 
@@ -52,7 +52,7 @@ export default class CommentCard extends React.PureComponent {
                 const pw = sessionStorage.getItem('Suit_App_KS')
                 const requestBody = {
                     password: pw,
-                    userId: this.props.userId,
+                    userId: this.props.loggedUserId,
                     body: this.state.comment
                 }
                 const { data } = await axios.put(`/&api&/comments/${this.props.commentId}`, requestBody)
@@ -82,7 +82,7 @@ export default class CommentCard extends React.PureComponent {
             const pw = sessionStorage.getItem('Suit_App_KS')
             const requestBody = {
                 password: pw,
-                userId: this.props.userId,
+                userId: this.props.loggedUserId,
             }
             const { data } = await axios.patch(`/&api&/comments/${this.props.commentId}/delete`, requestBody)
             if (data.status === 'success') {
