@@ -129,9 +129,8 @@ router.post("/add", upload.single("posts"), async (req, res, next) => {
       const { caption, formattedHashtags } = processInput(req, "caption");
       const title = processInput(req, "title");
       const currUserId = processInput(req, "currUserId");
-      const password = processInput(req, "password");
-      const authenticated = await getAuth(currUserId, password);
-      if (authenticated) {
+
+      if (currUserId === req.user.id) {
         const response = await createPost({
             ownerId: currUserId,
             title,
@@ -159,9 +158,8 @@ router.patch("/edit/:postId", async (req, res, next) => {
     const { caption, formattedHashtags } = processInput(req, "caption");
     const title = processInput(req, "title");
     const currUserId = processInput(req, "currUserId");
-    const password = processInput(req, "password");
-    const authenticated = getAuth(currUserId, password);
-    if (authenticated) {
+    
+    if (currUserId === req.user.id) {
       const response = await editPost({ id: postId, currUserId, title, caption, formattedHashtags });
       res.json({
           status: "success",
@@ -181,9 +179,8 @@ router.patch("/delete/:postId", async (req, res, next) => {
     try {
       const postId = processInput(req, "postId");
       const currUserId = processInput(req, "currUserId");
-      const password = processInput(req, "password");
-      const authenticated = getAuth(currUserId, password);
-      if (authenticated) {
+      
+      if (currUserId === req.user.id) {
         const response = await deletePost(postId, currUserId);
         res.json({
             status: "success",

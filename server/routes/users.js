@@ -3,7 +3,6 @@ const router = express.Router();
 const multer = require('multer');
 
 const usersQueries = require('../queries/users');
-const { authenticateUser } = require('../queries/authentication')
 const passport = require('../auth/passport')
 const { checkUserLogged, hashPassword } = require('../auth/helpers')
 
@@ -31,7 +30,7 @@ const upload = multer({
         fileFilter: fileFilter,
     });
 
-const handleError = (response, err) => {
+const sendError = (response, err) => {
     console.log(err)
     response.status(500)
     response.json({
@@ -63,7 +62,7 @@ const passportAuthentication = (request, response, next) => {
     passport.authenticate('local', (err, user) => {
         if (err) {
             console.log('ERROR: ', err);
-            handleError(response, err)
+            sendError(response, err)
         } else if (!user) {
             response.status(401).json({
                 status: 'fail',
@@ -114,7 +113,7 @@ router.post("/login", /*passportAuthentication*/passport.authenticate('local'), 
 //                 })
 //             }
 //         } catch (err) {
-//             handleError(response, err)
+//             sendError(response, err)
 //         }
 //     }
 // })
@@ -145,7 +144,7 @@ const signupUser = async (request, response, next) => {
                     payload: null,
                 })
             } else {
-                handleError(response, err)
+                sendError(response, err)
             }
         }
     }
@@ -192,7 +191,7 @@ router.get('/all', checkUserLogged, async (request, response) => {
             payload: allUsers,
         })
     } catch (err) {
-        handleError(response, err)
+        sendError(response, err)
     }
 })
 
@@ -211,7 +210,7 @@ router.get('/:username', checkUserLogged, async (request, response) => {
             const targetUser = await usersQueries.getUserById(userId);
             handleResponse(response, targetUser)
         } catch (err) {
-            handleError(response, err)
+            sendError(response, err)
         }
     } else {
         try {
@@ -219,7 +218,7 @@ router.get('/:username', checkUserLogged, async (request, response) => {
             handleResponse(response, targetUser)
 
         } catch (err) {
-            handleError(response, err)
+            sendError(response, err)
         }
     }
 })
@@ -249,8 +248,18 @@ const updateUser = async (request, response, next) => {
             avatarUrl = 'http://' + request.headers.host + '/images/avatars/' + request.file.filename
         } 
         try {
-            await usersQueries.updateUserInfo(userId, request.body, avatarUrl)
-            next()
+            if (parseInt(userId) === request.user.id) {
+                await usersQueries.updateUserInfo(userId, request.body, avatarUrl)
+                next()
+            } else {
+                console.log('Not authorized to update')
+                response.status(403)
+                response.json({
+                    status: 'fail',
+                    message: 'Not authorized to update',
+                    payload: null,
+                })
+            }
             
         } catch (err) {
             // Username/email already taken 
@@ -263,7 +272,7 @@ const updateUser = async (request, response, next) => {
                     payload: null,
                 })
             } else {
-                handleError(response, err)
+                sendError(response, err)
             }
         }
     }
@@ -293,15 +302,26 @@ const updatePassword = async (request, response, next) => {
             })
     } else {
         try {
-            // const password = hashPassword(newPassword)
-            // const updatedUser = await usersQueries.updateUserPassword(userId, password)
-            const updatedUser = await usersQueries.updateUserPassword(userId, newPassword)
-            request.body.password = newPassword
-            request.body.email = updatedUser.email
-            next()
+            if (parseInt(userId) === request.user.id) {
+                // const password = hashPassword(newPassword)
+                // const updatedUser = await usersQueries.updateUserPassword(userId, password)
+                const updatedUser = await usersQueries.updateUserPassword(userId, newPassword)
+                request.body.password = newPassword
+                request.body.email = updatedUser.email
+                next()
+
+            } else {
+                console.log('Not authorized to update')
+                response.status(401)
+                response.json({
+                    status: 'fail',
+                    message: 'Not authorized to update',
+                    payload: null,
+                })
+            }
             
         } catch (err) {
-            handleError(response, err)
+            sendError(response, err)
         }
     }
 }
@@ -321,18 +341,29 @@ const updateTheme = async (request, response, next) => {
     const { userId, theme } = request.params;
     const password = request.body.password;
 
-    if ((theme === 'dark' || theme === 'light') && password) { 
+    if ((theme === 'dark' || theme === 'light') && password && !isNaN(parseInt(userId)) && parseInt(userId)+'' === userId) { 
         try {
-            const updatedTheme = await usersQueries.updateUserTheme(userId, theme)
-            request.body.email = updatedTheme.email;
-            next();
+            if (parseInt(userId) === request.user.id) {
+                const updatedTheme = await usersQueries.updateUserTheme(userId, theme)
+                request.body.email = updatedTheme.email;
+                next();
+
+            } else {
+                console.log('Not authorized to update')
+                response.status(401)
+                response.json({
+                    status: 'fail',
+                    message: 'Not authorized to update',
+                    payload: null,
+                })
+            }
             
         } catch (err) {
-            handleError(response, err)
+            sendError(response, err)
         }
 
     } else {
-        console.log('Invalid route for changing the theme')
+        console.log('Invalid route')
         response.status(404)
         response.json({
             status: 'fail',
@@ -356,7 +387,7 @@ router.patch('/:userId/delete', checkUserLogged, async (request, response) => {
     const userId = request.params.userId;
     const { password } = request.body
 
-    if (!password) {
+    if (!password || isNaN(parseInt(userId)) || parseInt(userId) + '' !== userId) {
         response.status(400)
             response.json({
                 status: 'fail',
@@ -365,24 +396,27 @@ router.patch('/:userId/delete', checkUserLogged, async (request, response) => {
             })
     } else {
         try {
-            const deletedUser = await usersQueries.deleteUser(userId)
-            if (deletedUser) {
+            if (parseInt(userId) === request.user.id) {
+                const deletedUser = await usersQueries.deleteUser(userId)
                 request.logOut()
                 response.json({
                     status: 'success',
                     message: 'Successfully delete user',
                     payload: deletedUser,
                 })
+
             } else {
+                console.log('Not authorized to update')
                 response.status(401)
                 response.json({
                     status: 'fail',
-                    message: 'Invalid user',
+                    message: 'Not authorized to update',
                     payload: null,
                 })
             }
+            
         } catch (err) {
-            handleError(response, err)
+            sendError(response, err)
         }
     }
 })
