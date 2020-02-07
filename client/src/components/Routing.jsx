@@ -33,27 +33,27 @@ export default function Routing(props) {
                           <Redirect to={`/${user.username}/feed`} /> 
                       </Route>
                       <Route path={'/undefined/:page'} component={ErrorNotFound} />
-                      <Route path={'/:username/feed'} render={props => (<Feed 
+                      <Route path={'/:username/feed'} render={routeProps => (<Feed 
                                 user={user}
-                                {...props} /> )} 
+                                {...routeProps} /> )} 
                             />
-                      <Route path={'/:username/persona'} render={props => (<Persona 
+                      <Route path={'/:username/persona'} render={routeProps => (<Persona 
                                 user={user}
-                                {...props} /> )} 
+                                {...routeProps} /> )} 
                             />
-                      <Route path={'/:username/events'} render={props => (<Events 
+                      <Route path={'/:username/events'} render={routeProps => (<Events 
                                 user={user}
-                                {...props} /> )} 
+                                {...routeProps} /> )} 
                             />
-                      <Route path={'/about'} render={props => (<AboutSA 
+                      <Route path={'/about'} render={routeProps => (<AboutSA 
                                 user={user}
-                                {...props} /> )} 
+                                {...routeProps} /> )} 
                             />
-                      <Route path={'/:username/account'} render={props => (<Account 
+                      <Route path={'/:username/account'} render={routeProps => (<Account 
                                 user={user}
                                 updateUser={props.updateUser}
                                 logout={props.logout}
-                                {...props} /> )} 
+                                {...routeProps} /> )} 
                             />
                       <Route exact component={ErrorNotFound} />
                   </Switch>

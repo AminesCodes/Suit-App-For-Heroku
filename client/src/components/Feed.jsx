@@ -21,16 +21,13 @@ export default class Feed extends PureComponent {
   }
 
   async componentDidMount() {
-    // console.log("componentDidMount ran");
     await this.getFeed();
   }
 
   async componentDidUpdate(prevProps, prevState) {
-    // console.log("componentDidUpdate ran");
     const arePathnamesSame = this.props.location.pathname === prevProps.location.pathname;
     const areSearchesSame = this.props.location.search === prevProps.location.search;
     if (!arePathnamesSame || !areSearchesSame) {
-      // console.log("RERUNNING GETFEED");
       await this.getFeed();
     }
   }
@@ -38,7 +35,6 @@ export default class Feed extends PureComponent {
   getSearches = () => {
       let process = new URLSearchParams(this.props.location.search);
       const string = process.get("search");
-      // console.log("searchCheck: ", string);
       return string;
   }
 
@@ -60,8 +56,6 @@ export default class Feed extends PureComponent {
 
   // ############## RENDER ################
   render() {
-    // console.log("render ran, posts: ", this.state.posts);
-
     const postsList = this.state.posts.map(post => {
 
         // CREATE HASHTAGS COMPONENTS

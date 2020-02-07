@@ -56,7 +56,6 @@ export default class CommentCard extends React.PureComponent {
                     body: this.state.comment
                 }
                 const { data } = await axios.put(`/&api&/comments/${this.props.commentId}`, requestBody)
-                console.log(data)
                 if (data.status === 'success') {
                     if (this.props.reloadComments) {
                         this.props.reloadComments(this.props.postId)

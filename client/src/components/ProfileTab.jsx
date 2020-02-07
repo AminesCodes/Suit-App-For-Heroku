@@ -46,7 +46,6 @@ export default class ProfileTab extends React.PureComponent {
     
     // ##################### RENDER ######################
     render() {
-        console.log('PROFILE TAB')
         return (
             <div className={`tab-pane fade show ${this.props.active}`}>
                 <div className='d-sm-flex justify-content-between col-sm-12'>

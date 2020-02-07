@@ -80,7 +80,6 @@ export default class Persona extends Component {
       const allCurrentUserFollowings = allCurrentUserFollowingsData.data.payload
       let isUserFollowing = false
       for (let following of allCurrentUserFollowings) {
-        console.log(following.follow, targetUser, currentUsername)
         if (following.follow === targetUser) {
           isUserFollowing = true
           break

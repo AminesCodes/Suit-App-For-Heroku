@@ -24,7 +24,6 @@ class TopBar extends PureComponent {
 
   handleSearchForm = async (event) => {
     event.preventDefault();
-    console.log(this.props.history)
     this.props.history.push({
         pathname: `/${this.props.username}/feed/all`,
         search: `?search=${this.state.search}`

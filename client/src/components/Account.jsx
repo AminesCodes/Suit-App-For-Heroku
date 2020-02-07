@@ -133,20 +133,20 @@ export default class Account extends React.PureComponent {
                 }
 
                 const { data } = await axios.put(`/&api&/users/${id}`, userInfo)
-                // this.setState({
-                    // username: data.payload.username,
-                    // firstName: data.payload.firstname,
-                    // lastName: data.payload.lastname,
-                    // email: data.payload.email,
-                    // avatar: data.payload.avatar_url,
-                    // bio: data.payload.bio,
-                //     password: '',
-                //     waitingForData: false,
-                // })
+                this.setState({
+                    username: data.payload.username,
+                    firstName: data.payload.firstname,
+                    lastName: data.payload.lastname,
+                    email: data.payload.email,
+                    avatar: data.payload.avatar_url,
+                    bio: data.payload.bio,
+                    password: '',
+                    waitingForData: false,
+                })
                 this.props.updateUser(data.payload)
 
                 toast.success('Updated information successfully',
-                { position: toast.POSITION.BOTTOM_CENTER });
+                    { position: toast.POSITION.BOTTOM_CENTER });
 
             } catch (err) {
                 this.setState({ waitingForData: false })
@@ -232,8 +232,9 @@ export default class Account extends React.PureComponent {
             try {
                 this.setState({ waitingForData: true })
                 await axios.patch(`/&api&/users/${this.state.id}/delete`, {password: this.state.password})
+                this.setState({ waitingForData: false })
                 this.props.logout()
-                this.props.history.push({ pathname: `/` })
+                
             } catch (err) {
                 this.setState({ waitingForData: false })
                 handleNetworkErrors(err)
@@ -247,7 +248,7 @@ export default class Account extends React.PureComponent {
 
     // ############ RENDER ############
     render() {
-        console.log('ACCOUNT')
+        console.log(this.props.user)
         let content =
             <div className='spinner-border m-5' role='status'>
                 <span className='sr-only  text-center'>Loading...</span>

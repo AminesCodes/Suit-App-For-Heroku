@@ -49,7 +49,6 @@ export default class PostCard extends Component {
   }
 
   async componentDidMount() {
-    // console.log("componentDidMount ran");
     await this.getCommentsAndReactions();
   }
 
@@ -100,7 +99,6 @@ export default class PostCard extends Component {
           reactorId: this.uId + ''
         }
         const response = await axios.patch(url, postBody);
-        console.log(response);
         this.setState({ currUserLikeId: null });
       }
     } catch (err) {
