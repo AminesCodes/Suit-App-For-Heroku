@@ -26,25 +26,17 @@ toast.configure();
 export default class App extends Component {
   state = {
     loggedUser: null,
-    loadingData: false,
     // loggedUserId: 0,
     // loggedUserUsername: '',
   }
 
   async componentDidMount() {
-    console.log('COMPONENT DIT MOUNT')
     try {
-      this.setState({ loadingData: true })
       const { data } = await axios.get('/&api&/users/isUserLoggedIn')
-      console.log('COMPONENT DIT MOUNT', data.payload)
-      this.setState({
-        loggedUser: data.payload,
-        loadingData: false
-      })
-      sessionStorage.setItem('Suit_App_UId', data.payload.id);
-      sessionStorage.setItem('Suit_App_Un', data.payload.username);
+      this.setState({ loggedUser: data.payload })
+      console.log('Logged user in backend: ', data.payload)
+      
     } catch (err) {
-      this.setState({ loadingData: false })
       console.log('ERROR', err)
     }
   }
@@ -53,10 +45,7 @@ export default class App extends Component {
     return nextState.loggedUser !== this.state.loggedUser
   }
 
-  handleFormSubmit = (user, password) => {
-    sessionStorage.setItem('Suit_App_KS', password);
-    sessionStorage.setItem('Suit_App_UId', user.id);
-    sessionStorage.setItem('Suit_App_Un', user.username);
+  handleFormSubmit = (user) => {
     this.setState({ loggedUser: user });
   }
 
@@ -73,10 +62,6 @@ export default class App extends Component {
 
   // ###################### RENDER ######################
   render() {
-    const pw = sessionStorage.getItem('Suit_App_KS')
-    const uId = sessionStorage.getItem('Suit_App_UId')
-    const username = sessionStorage.getItem('Suit_App_Un')
-
     let pageContent = 
       <>
         <div className="j-jumbotron jumbotron bg-appColor text-white">
@@ -89,8 +74,12 @@ export default class App extends Component {
         <AboutSA className='container-sm'/>
       </>
 
-    if (pw && uId) {
-      pageContent = <Routing user={this.state.loggedUser} userId={uId} username={username} logout={this.handleLogOut}/>
+    if (this.state.loggedUser) {
+      pageContent = <Routing 
+                        user={this.state.loggedUser} 
+                        logout={this.handleLogOut}
+                        updateUser={this.handleFormSubmit}
+                      />
     }
 
     return (

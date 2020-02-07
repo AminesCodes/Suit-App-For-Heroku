@@ -9,12 +9,14 @@ passport.use(new LocalStrategy({usernameField: 'email', passwordField : 'passwor
   try {
     const user = await usersQueries.getUserByEmail(username);
     if (!user) { // user not found in the database
+      console.log('user not found in the database')
       return done(null, false)
     }
 
     // const passMatch = await comparePasswords(password, user.user_password);
     // if (!passMatch) { // user found but passwords don't match
     if (password !== user.user_password) { // user found but passwords don't match
+    console.log('user found but passwords do not match')
       return done(null, false)
     }
 
