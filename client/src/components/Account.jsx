@@ -258,16 +258,16 @@ export default class Account extends React.PureComponent {
             <>
                 <ul className="nav nav-tabs">
                     <li className="nav-item">
-                      <Link className={`nav-link ${this.state.profileTab}`} to={`${this.state.username}/account`} >Profile</Link>
+                      <Link className={`nav-link ${this.state.profileTab}`} to={`/${this.state.username}/account`} >Profile</Link>
                     </li>
                     <li className="nav-item">
-                      <Link className={`nav-link ${this.state.passwordTab}`} to={`${this.state.username}/password`} >Update Password</Link>
+                      <Link className={`nav-link ${this.state.passwordTab}`} to={`/${this.state.username}/account/password`} >Update Password</Link>
                     </li>
                     <li className="nav-item">
-                      <Link className={`nav-link ${this.state.postsTab}`} to={`${this.state.username}/posts`} >My Posts</Link>
+                      <Link className={`nav-link ${this.state.postsTab}`} to={`/${this.state.username}/account/posts`} >My Posts</Link>
                     </li>
                     <li className="nav-item">
-                      <Link className={`nav-link ${this.state.followTab}`} to={`${this.state.username}/relationships`} >Follows</Link>
+                      <Link className={`nav-link ${this.state.followTab}`} to={`/${this.state.username}/account/relationships`} >Follows</Link>
                     </li>
                 </ul>
 
@@ -305,7 +305,7 @@ export default class Account extends React.PureComponent {
                         active = {this.state.postsTab}
                         handleTabSelection = {this.handleTabSelection}
                         userId = {this.state.id}
-                        // allowedToEdit={this.state.id+'' === uId+''} // NEED TO BE REVIEWED
+                        allowedToEdit={this.state.id === this.props.loggedUserId} // NEED TO BE REVIEWED
                         {...props} /> )} 
                     />
                     <Route path={`/:username/account/relationships`} render={props => (<Relationships

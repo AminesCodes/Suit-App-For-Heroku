@@ -35,10 +35,12 @@ export default function Routing(props) {
                       <Route path={'/undefined/:page'} component={ErrorNotFound} />
                       <Route path={'/:username/feed'} render={routeProps => (<Feed 
                                 user={user}
+                                loggedUserId={user.id}
                                 {...routeProps} /> )} 
                             />
                       <Route path={'/:username/persona'} render={routeProps => (<Persona 
                                 user={user}
+                                loggedUserId={user.id}
                                 {...routeProps} /> )} 
                             />
                       <Route path={'/:username/events'} render={routeProps => (<Events 
@@ -51,6 +53,7 @@ export default function Routing(props) {
                             />
                       <Route path={'/:username/account'} render={routeProps => (<Account 
                                 user={user}
+                                loggedUserId={user.id}
                                 updateUser={props.updateUser}
                                 logout={props.logout}
                                 {...routeProps} /> )} 
