@@ -44,7 +44,7 @@ export default class Account extends React.PureComponent {
         oldPassword: '',
         newPassword: '',
         newPasswordConfirmation: '',
-        waitingForData: true,
+        waitingForData: false,
         profileTab: 'active',
         passwordTab: '',
         postsTab: '',
@@ -247,6 +247,7 @@ export default class Account extends React.PureComponent {
 
     // ############ RENDER ############
     render() {
+        console.log('ACCOUNT')
         let content =
             <div className='spinner-border m-5' role='status'>
                 <span className='sr-only  text-center'>Loading...</span>
@@ -256,7 +257,7 @@ export default class Account extends React.PureComponent {
             <>
                 <ul className="nav nav-tabs">
                     <li className="nav-item">
-                      <Link className={`nav-link ${this.state.profileTab}`} to={`${this.state.username}`} >Profile</Link>
+                      <Link className={`nav-link ${this.state.profileTab}`} to={`${this.state.username}/account`} >Profile</Link>
                     </li>
                     <li className="nav-item">
                       <Link className={`nav-link ${this.state.passwordTab}`} to={`${this.state.username}/password`} >Update Password</Link>

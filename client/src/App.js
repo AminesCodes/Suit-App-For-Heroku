@@ -11,6 +11,7 @@ import { toast } from 'react-toastify';
 import './reset.css'; // stays before App.css
 import './App.css'; // this must stay before component imports
 import axios from 'axios'
+import { withRouter } from 'react-router-dom'
 
 import LoginSigninForm from './components/LoginSigninForm';
 import Routing from './components/Routing';
@@ -23,7 +24,7 @@ toast.configure();
 // const imgLogo = require('./assets/images/logo.png');
 
 
-export default class App extends Component {
+class App extends Component {
   state = {
     loggedUser: null,
     // loggedUserId: 0,
@@ -54,6 +55,7 @@ export default class App extends Component {
       await axios.get('/&api&/users/logout');
       sessionStorage.clear();
       this.setState({ loggedUser: null });
+      this.props.history.push({ pathname: `/` })
     } catch (err) {
       console.log('ERROR', err)
     }
@@ -89,3 +91,5 @@ export default class App extends Component {
     );
   }
 }
+
+export default withRouter(App)
