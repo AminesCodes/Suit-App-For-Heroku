@@ -10,7 +10,6 @@ const {
 
 const { getOnePost } = require('../queries/posts');
 
-const { authenticateUser } = require('../queries/authentication')
 
 const handleError = (response, err) => {
     if (err.message === "No data returned from the query.") {
@@ -44,18 +43,6 @@ const isValidId = (id) => {
     return false
 }
 
-const isUserAllowed = async (response, id, password) => {
-    try {
-        return await authenticateUser(id, password)
-    } catch (err) {
-        console.log(err)
-        if (err.message === "No data returned from the query.") {
-            return false
-        } else {
-            handleError(response, err)
-        }
-    }
-}
 
 // GET ALL COMMENTS BY POST ID
 router.get('/:postId', async (request, response) => {
@@ -101,7 +88,7 @@ router.get('/:postId', async (request, response) => {
 router.post('/:postId/:userId', async (request, response) => {
     const postId = request.params.postId;
     const userId = request.params.userId;
-    const { password, body } = request.body;
+    const body = request.body;
     const validPostId = isValidId(postId);
     const validUserId = isValidId(userId);
 
@@ -112,7 +99,7 @@ router.post('/:postId/:userId', async (request, response) => {
             message: 'Wrong route',
             payload: null,
         })
-    } else if (!password || !body) {
+    } else if (!body) {
         response.status(400)
         response.json({
             status: 'fail',
@@ -121,8 +108,7 @@ router.post('/:postId/:userId', async (request, response) => {
         })
     } else {
         try {
-            const userAllowed = await isUserAllowed(response, userId, password)
-            if (!userAllowed) {
+            if (parseInt(userId) !== request.user.id) {
                 response.status(401)
                     response.json({
                         status: 'fail',
@@ -130,17 +116,14 @@ router.post('/:postId/:userId', async (request, response) => {
                         payload: null,
                     })
             } else {
-                try {
-                    const addComment = await addCommentToPost(postId, userId, body);
-                    response.status(201)
-                    response.json({
-                        status: 'success',
-                        message: `Successfully added a comment to the post: ${postId}`,
-                        payload: addComment,
-                    })
-                } catch (err) {
-                    handleError(response, err)
-                }
+                const addComment = await addCommentToPost(postId, userId, body);
+                response.status(201)
+                response.json({
+                    status: 'success',
+                    message: `Successfully added a comment to the post: ${postId}`,
+                    payload: addComment,
+                })
+                
             }
         } catch (err) {
             handleError(response, err)
@@ -152,7 +135,7 @@ router.post('/:postId/:userId', async (request, response) => {
 // EDIT A COMMENT
 router.put('/:commentId', async (request, response) => {
     const commentId = request.params.commentId;
-    const { password, userId, body } = request.body;
+    const { userId, body } = request.body;
     const validCommentId = isValidId(commentId);
     const validUserId = isValidId(userId);
 
@@ -163,7 +146,7 @@ router.put('/:commentId', async (request, response) => {
             message: 'Wrong route',
             payload: null,
         })
-    } else if (!password || !validUserId || !body) {
+    } else if (!validUserId || !body) {
         response.status(400)
         response.json({
             status: 'fail',
@@ -172,8 +155,7 @@ router.put('/:commentId', async (request, response) => {
         })
     } else {
         try {
-            const userAllowed = await isUserAllowed(response, userId, password)
-            if (!userAllowed) {
+            if (parseInt(userId) !== request.user.id) {
                 response.status(401)
                     response.json({
                         status: 'fail',
@@ -181,18 +163,14 @@ router.put('/:commentId', async (request, response) => {
                         payload: null,
                     })
             } else {
-                try {
-                    const editExistingComment = await editComment(commentId, userId, body);
-                    response.json({
-                        status: 'success',
-                        message: `Successfully updated the comment: ${commentId}`,
-                        payload: editExistingComment,
-                    })
-                } catch (err) {
-                    console.log(err)
-                    handleError(response, err)
-                }
+                const editExistingComment = await editComment(commentId, userId, body);
+                response.json({
+                    status: 'success',
+                    message: `Successfully updated the comment: ${commentId}`,
+                    payload: editExistingComment,
+                })
             }
+
         } catch (err) {
             handleError(response, err)
         }
@@ -203,11 +181,10 @@ router.put('/:commentId', async (request, response) => {
 // DELETE A COMMENT
 router.patch('/:commentId/delete', async (request, response) => {
     const commentId = request.params.commentId;
-    const { password, userId } = request.body;
+    const userId = request.body.userId;
     const validCommentId = isValidId(commentId);
     const validUserId = isValidId(userId);
 
-    console.log(password, validUserId, userId)
     if (!validCommentId) {
         response.status(404)
         response.json({
@@ -215,7 +192,7 @@ router.patch('/:commentId/delete', async (request, response) => {
             message: 'Wrong route',
             payload: null,
         })
-    } else if (!password || !validUserId) {
+    } else if (!validUserId) {
         response.status(400)
         response.json({
             status: 'fail',
@@ -224,8 +201,7 @@ router.patch('/:commentId/delete', async (request, response) => {
         })
     } else {
         try {
-            const userAllowed = await isUserAllowed(response, userId, password)
-            if (!userAllowed) {
+            if (parseInt(userId) !== request.user.id) {
                 response.status(401)
                     response.json({
                         status: 'fail',
@@ -233,17 +209,14 @@ router.patch('/:commentId/delete', async (request, response) => {
                         payload: null,
                     })
             } else {
-                try {
-                    const deleteExistingComment = await deleteComment(commentId, userId);
-                    response.json({
-                        status: 'success',
-                        message: `Successfully deleted the comment: ${commentId}`,
-                        payload: deleteExistingComment,
-                    })
-                } catch (err) {
-                    handleError(response, err)
-                }
+                const deleteExistingComment = await deleteComment(commentId, userId);
+                response.json({
+                    status: 'success',
+                    message: `Successfully deleted the comment: ${commentId}`,
+                    payload: deleteExistingComment,
+                })
             }
+
         } catch (err) {
             handleError(response, err)
         }

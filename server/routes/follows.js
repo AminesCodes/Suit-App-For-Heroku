@@ -10,14 +10,13 @@ const express = require('express');
     const router = express.Router();
     
 //    local
-const { handleError, getAuth, checkDoesUserExist } = require('../helpers/globalHelp.js');
+const { handleError, checkDoesUserExist } = require('../helpers/globalHelp.js');
 const { processInput, handleSuccess } = require('../helpers/followsHelp.js');
 const { 
   getFollows,
   getFollowers,
   createFollow,
   deleteFollow,
-  checkFollowAlreadyExists
 } = require('../queries/follows.js');
 
 

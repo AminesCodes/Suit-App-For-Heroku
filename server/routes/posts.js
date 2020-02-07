@@ -27,7 +27,7 @@ const multer = require('multer');
     };
     const upload = multer({ storage, fileFilter });
 //    local
-const { handleError, getAuth, checkDoesUserExist } = require('../helpers/globalHelp.js');
+const { handleError, checkDoesUserExist } = require('../helpers/globalHelp.js');
 const { processInput } = require('../helpers/postsHelp.js');
 const { 
   getAllPosts,

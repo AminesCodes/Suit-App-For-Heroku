@@ -14,14 +14,12 @@ import PostCard from './PostCard';
 
 
 export default class Feed extends PureComponent {
-  pw = sessionStorage.getItem('Suit_App_KS');
-  // uId = sessionStorage.getItem('Suit_App_UId');
   state = {
     posts: []
   }
 
-  async componentDidMount() {
-    await this.getFeed();
+  componentDidMount() {
+    this.getFeed();
   }
 
   async componentDidUpdate(prevProps, prevState) {
@@ -43,7 +41,7 @@ export default class Feed extends PureComponent {
     const pathname = this.props.location.pathname;
     const searchString = this.getSearches();
     if (!pathname.includes("all")) {                      // switch to follows feed
-      url += `follows/${this.props.userId}`;
+      url += `follows/${this.props.user.id}`;
     } else if (searchString) {                            // switch to hashtags feed
       url += `tags/?hashtags=${searchString}`;
     }

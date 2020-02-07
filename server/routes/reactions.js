@@ -11,7 +11,6 @@ const {
     deleteReaction
 } = require('../queries/reactions');
 
-const { authenticateUser } = require('../queries/authentication')
 
 const handleError = (response, err) => {
     if (err.message === "No data returned from the query.") {
@@ -46,18 +45,6 @@ const isValidId = (id) => {
     return false
 }
 
-const isUserAllowed = async (response, id, password) => {
-    try {
-        return await authenticateUser(id, password)
-    } catch (err) {
-        console.log(err)
-        if (err.message === "No data returned from the query.") {
-            return false
-        } else {
-            handleError(response, err)
-        }
-    }
-}
 
 // GET ALL REACTIONS BY POST ID
 
@@ -192,7 +179,7 @@ router.get('/comment/:commentId/:reactorId', async (request, response) => {
 
 router.post('/add/post/:postId', async (request, response) => {
     const postId = request.params.postId;
-    const { password, reactorId, emojiType } = request.body;
+    const { reactorId, emojiType } = request.body;
     const validPostId = isValidId(postId);
     const validReactorId = isValidId(reactorId);
 
@@ -205,8 +192,7 @@ router.post('/add/post/:postId', async (request, response) => {
         })
     } else {
         try {
-            const userAllowed = await isUserAllowed(response, reactorId, password)
-            if (!userAllowed) {
+            if (reactorId !== req.user.id) {
                 response.status(401)
                     response.json({
                         status: 'fail',
@@ -236,7 +222,7 @@ router.post('/add/post/:postId', async (request, response) => {
 
 router.post('/add/comment/:commentId', async (request, response) => {
     const commentId = request.params.commentId;
-    const { password, reactorId, emojiType } = request.body;
+    const { reactorId, emojiType } = request.body;
     const validCommentId = isValidId(commentId);
     const validReactorId = isValidId(reactorId);
 
@@ -249,8 +235,7 @@ router.post('/add/comment/:commentId', async (request, response) => {
         })
     } else {
         try {
-            const userAllowed = await isUserAllowed(response, reactorId, password)
-            if (!userAllowed) {
+            if (reactorId !== req.user.id) {
                 response.status(401)
                     response.json({
                         status: 'fail',
@@ -281,7 +266,6 @@ router.post('/add/comment/:commentId', async (request, response) => {
 router.patch('/delete/:reactionId', async (request, response) => {
     const reactionId = request.params.reactionId;
     const reactorId = request.body.reactorId;
-    const password = request.body.password;
     const validReactionId = isValidId(reactionId);
     const validReactorId = isValidId(reactorId);
 
@@ -294,8 +278,7 @@ router.patch('/delete/:reactionId', async (request, response) => {
         })
     } else {
         try {
-            const userAllowed = await isUserAllowed(response, reactorId, password)
-            if (!userAllowed) {
+            if (reactorId !== req.user.id) {
                 response.status(401)
                     response.json({
                         status: 'fail',
