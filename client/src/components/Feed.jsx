@@ -54,7 +54,6 @@ export default class Feed extends PureComponent {
 
   // ############## RENDER ################
   render() {
-    console.log(this.props)
     const postsList = this.state.posts.map(post => {
 
         // CREATE HASHTAGS COMPONENTS

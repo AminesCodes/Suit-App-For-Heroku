@@ -6,7 +6,6 @@ GROUP 1: Amine Bensalem, Douglas MacKrell, Savita Madray, Joseph P. Pasaoa
 
 /* IMPORTS */
 const { getUserById } = require('../queries/users.js'); // for checking if user exists after no results
-const { authenticateUser } = require('../queries/authentication.js'); // for authentication
 
 
 /* HELPERS */
@@ -34,16 +33,6 @@ const handleError = (err, req, res, next) => {
   });
 };
 
-const getAuth = async (currUserId, password) => {
-  try {
-    return await authenticateUser(currUserId, password);
-  } catch (err) {
-    throw new Error(err.message === "No data returned from the query."
-      ? "404__error: authentication failure"
-      : "401__error: authentication failure"
-    );
-  }
-}
 
 const checkDoesUserExist = async (resultArray, userId) => {
   try {
@@ -61,6 +50,5 @@ const checkDoesUserExist = async (resultArray, userId) => {
 
 module.exports = {
   handleError,
-  getAuth,
   checkDoesUserExist
 }
