@@ -4,8 +4,9 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
-var session = require('express-session');
-var passport = require('./auth/passport')
+const session = require('express-session');
+const passport = require('./auth/passport');
+const cors = require('cors');
 
 const usersRouter = require('./routes/users');
 const postsRouter = require('./routes/posts');
@@ -34,8 +35,10 @@ app.use(session({
   saveUninitialized: true
 }))
 
-app.use(passport.initialize())
-app.use(passport.session())
+app.use(cors())
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use('/&api&/users', usersRouter);
 app.use('/&api&/posts', checkUserLogged, postsRouter);
