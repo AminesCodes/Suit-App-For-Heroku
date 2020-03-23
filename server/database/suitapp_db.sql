@@ -6,7 +6,7 @@ GROUP 1: Amine Bensalem, Douglas MacKrell, Savita Madray, Joseph P. Pasaoa
 /* CREATE DATABASE */
 -- DROP DATABASE IF EXISTS suitapp_db;
 -- CREATE DATABASE suitapp_db;
--- \c suitapp_db;
+\c suitapp_db;
 
 DROP TABLE IF EXISTS events;
 DROP TABLE IF EXISTS reactions;
@@ -23,7 +23,7 @@ CREATE TABLE users
     lastname VARCHAR (20) NOT NULL,
     username VARCHAR (20),
     normalized_username VARCHAR (20) UNIQUE NOT NULL,
-    user_password VARCHAR (30) NOT NULL,
+    user_password VARCHAR NOT NULL,
     email VARCHAR (30) UNIQUE NOT NULL,
     avatar_url TEXT DEFAULT '',
     bio VARCHAR (500) DEFAULT '',
@@ -87,15 +87,15 @@ CREATE TABLE events
 INSERT INTO users
 (firstname, lastname, username, normalized_username, user_password, email, avatar_url, bio)
 VALUES
-('Abby', 'Star', 'Abby Dark Star', 'abbydarkstar', 'password123', 'abbydarkstar@gmail.com', '/images/avatars/abby_avatar.jpg', 'New England bred, Southern raised, West Coast girl. Marketing| Content Creator | Cosplayer| Current: Unity |Former: Logitech G, Ubisoft'),
-('Nova', 'Kyra', 'Nova Kyra', 'novakyra', 'password123', 'novakyra@gmail.com', '/images/avatars/nova_avatar.jpg', '20 something lover of cosplay, wine, bikinis and general nerdity.'),
-('Envy', 'Us', 'EnvyUs', 'envyus', 'password123', 'greenwith@gmail.com', '/images/avatars/envy_avatar.jpg', 'Just a girl Lovecrafting their way to your heart'),
-('Spider', 'Monarch', 'Cursed Arachnid', 'cursedarachnid', 'password123', 'cursedarachnid@gmail.com', '/images/avatars/cursed_avatar.jpg', '🕷spiders are beautiful🕷spider-man/fantastic four enthusiast🕷'),
-('MH', 'Cosplay & Design', 'MH Cosplay & Design', 'mhcosplaydesign', 'password123', 'mhcosplay@gmail.com', '/images/avatars/mh_avatar.jpg', 'Professional Cosplayer who loves Cosplay Art, and I love to create anything art related. Enjoy scrolling through my cosplay page.'),
-('MegaSeneca', 'Cosplay', 'MegaSeneca Cosplay', 'megasenecacosplay', 'password123', 'megaseneca@gmail.com', '/images/avatars/megaseneca_avatar.jpg', 'amateur cosplayer, artist, avid Megaman fan'),
-('Chris', 'Mason', 'Chris Mason', 'chrismason', 'password123', 'fit4life.com', '/images/avatars/chris_avatar.jpg', 'Gym Addict, Mixed martial artist, Cosplayer and Traveller. My Cosplay page is King of The North Cosplays'),
-('Dan', 'Morash', 'DanMorashCosplay', 'danmorashcosplay', 'password123', 'dantheman@gmail.com', '/images/avatars/leonardo_avatar.jpg', 'Cosplayer from Halifax - Obsessed with my cat and Funkos.'),
-('Empty', 'Newbie', 'mrNewPerson', 'mrnewperson', 'password123', 'mrempty@gmail.com', '', '');
+('Abby', 'Star', 'Abby Dark Star', 'abbydarkstar', '$2b$12$m3dV7Sn8pSjvdb8kKHXih.dmkGSLfz2PqsC99ntOkG9MWPXB8pSuC', 'abbydarkstar@gmail.com', '/images/avatars/abby_avatar.jpg', 'New England bred, Southern raised, West Coast girl. Marketing| Content Creator | Cosplayer| Current: Unity |Former: Logitech G, Ubisoft'),
+('Nova', 'Kyra', 'Nova Kyra', 'novakyra', '$2b$12$m3dV7Sn8pSjvdb8kKHXih.dmkGSLfz2PqsC99ntOkG9MWPXB8pSuC', 'novakyra@gmail.com', '/images/avatars/nova_avatar.jpg', '20 something lover of cosplay, wine, bikinis and general nerdity.'),
+('Envy', 'Us', 'EnvyUs', 'envyus', '$2b$12$m3dV7Sn8pSjvdb8kKHXih.dmkGSLfz2PqsC99ntOkG9MWPXB8pSuC', 'greenwith@gmail.com', '/images/avatars/envy_avatar.jpg', 'Just a girl Lovecrafting their way to your heart'),
+('Spider', 'Monarch', 'Cursed Arachnid', 'cursedarachnid', '$2b$12$m3dV7Sn8pSjvdb8kKHXih.dmkGSLfz2PqsC99ntOkG9MWPXB8pSuC', 'cursedarachnid@gmail.com', '/images/avatars/cursed_avatar.jpg', '🕷spiders are beautiful🕷spider-man/fantastic four enthusiast🕷'),
+('MH', 'Cosplay & Design', 'MH Cosplay & Design', 'mhcosplaydesign', '$2b$12$m3dV7Sn8pSjvdb8kKHXih.dmkGSLfz2PqsC99ntOkG9MWPXB8pSuC', 'mhcosplay@gmail.com', '/images/avatars/mh_avatar.jpg', 'Professional Cosplayer who loves Cosplay Art, and I love to create anything art related. Enjoy scrolling through my cosplay page.'),
+('MegaSeneca', 'Cosplay', 'MegaSeneca Cosplay', 'megasenecacosplay', '$2b$12$m3dV7Sn8pSjvdb8kKHXih.dmkGSLfz2PqsC99ntOkG9MWPXB8pSuC', 'megaseneca@gmail.com', '/images/avatars/megaseneca_avatar.jpg', 'amateur cosplayer, artist, avid Megaman fan'),
+('Chris', 'Mason', 'Chris Mason', 'chrismason', '$2b$12$m3dV7Sn8pSjvdb8kKHXih.dmkGSLfz2PqsC99ntOkG9MWPXB8pSuC', 'fit4life.com', '/images/avatars/chris_avatar.jpg', 'Gym Addict, Mixed martial artist, Cosplayer and Traveller. My Cosplay page is King of The North Cosplays'),
+('Dan', 'Morash', 'DanMorashCosplay', 'danmorashcosplay', '$2b$12$m3dV7Sn8pSjvdb8kKHXih.dmkGSLfz2PqsC99ntOkG9MWPXB8pSuC', 'dantheman@gmail.com', '/images/avatars/leonardo_avatar.jpg', 'Cosplayer from Halifax - Obsessed with my cat and Funkos.'),
+('Empty', 'Newbie', 'mrNewPerson', 'mrnewperson', '$2b$12$m3dV7Sn8pSjvdb8kKHXih.dmkGSLfz2PqsC99ntOkG9MWPXB8pSuC', 'mrempty@gmail.com', '', '');
 
 INSERT INTO posts
 (title, image_url, caption, owner_id, hashtag_str, time_created)

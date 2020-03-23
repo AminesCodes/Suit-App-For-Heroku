@@ -1,34 +1,35 @@
 const express = require('express');
 const router = express.Router();
-const multer = require('multer');
+// const multer = require('multer');
 
 const usersQueries = require('../queries/users');
-const passport = require('../auth/passport')
-const { checkUserLogged, hashPassword } = require('../auth/helpers')
+const passport = require('../auth/passport');
+const { checkUserLogged, hashPassword } = require('../auth/helpers');
+const storage = require('../helpers/s3Service');
 
-const storage = multer.diskStorage({
-  destination: (request, file, cb) => {
-    cb(null, './public/images/avatars') // UNEXPECTED BUG!! while '../public/images/avatars' looks like it's the correct route, for some reason it doesn't work
-  },
-  filename: (request, file, cb) => {
-    const fileName = Date.now() + "-" + file.originalname
-    cb(null, fileName)
-  }
-});
+// const storage = multer.diskStorage({
+//   destination: (request, file, cb) => {
+//     cb(null, './public/images/avatars') // UNEXPECTED BUG!! while '../public/images/avatars' looks like it's the correct route, for some reason it doesn't work
+//   },
+//   filename: (request, file, cb) => {
+//     const fileName = Date.now() + "-" + file.originalname
+//     cb(null, fileName)
+//   }
+// });
 
-const fileFilter = (request, file, cb) => {
-    if ((file.mimetype).slice(0, 6) === 'image/') {
+// const fileFilter = (request, file, cb) => {
+//     if ((file.mimetype).slice(0, 6) === 'image/') {
         
-        cb(null, true)
-    } else {
-        cb(null, false)
-    }
-}
+//         cb(null, true)
+//     } else {
+//         cb(null, false)
+//     }
+// }
 
-const upload = multer({ 
-        storage: storage,
-        fileFilter: fileFilter,
-    });
+// const upload = multer({ 
+//         storage: storage,
+//         fileFilter: fileFilter,
+//     });
 
 const sendError = (response, err) => {
     console.log(err)
@@ -76,12 +77,10 @@ const passportAuthentication = (request, response, next) => {
 }
 
 router.post("/login", /*passportAuthentication*/passport.authenticate('local'), (request, response) => {
-    const user = request.user
-    delete user.user_password
     response.json({
         status: 'success',
         message: 'Successfully logged user',
-        payload: user,
+        payload: request.user,
     })
 })
 // Log a registered user
@@ -129,8 +128,9 @@ const signupUser = async (request, response, next) => {
             })
     } else {
         try {
-            // request.body.password = await hashPassword(request.body.password)
-            const newUser = await usersQueries.createUser(request.body)
+            const hashedPassword = await hashPassword(request.body.password)
+            // const newUser = await usersQueries.createUser(request.body, hashedPassword)
+            await usersQueries.createUser(request.body, hashedPassword)
             next()
 
         } catch (err) {
@@ -151,13 +151,11 @@ const signupUser = async (request, response, next) => {
 }
  
 router.post('/signup', signupUser, passport.authenticate('local'), (request, response) => {
-    const user = request.user
-    delete user.user_password
     response.status(201)
     response.json({
         status: 'success',
         message: 'Successfully signed up',
-        payload: user,
+        payload: request.user,
     })
 })
 
@@ -171,12 +169,10 @@ router.get("/logout", /*checkUserLogged,*/ (request, response) => {
 })
   
 router.get("/isUserLoggedIn", checkUserLogged, (request, response) => {
-    const user = request.user
-    delete user.user_password
     response.json({
         status: 'success',
         message: 'User is logged in. Session active',
-        payload: user,
+        payload: request.user,
     })
 })
 
@@ -229,6 +225,9 @@ const updateUser = async (request, response, next) => {
     const { username, firstname, lastname, password, email} = request.body
 
     if (isNaN(parseInt(userId)) || parseInt(userId) + '' !== userId) {
+        if (request.file) {
+            storage.deleteFile(request.file.location)
+        }
         response.status(404)
             response.json({
                 status: 'fail',     
@@ -236,6 +235,9 @@ const updateUser = async (request, response, next) => {
                 payload: null,
             })
     } else if (username === 'undefined' || !username || !firstname || !lastname || !password || !email) {
+        if (request.file) {
+            storage.deleteFile(request.file.location)
+        }
         response.status(400)
             response.json({
                 status: 'fail',
@@ -245,13 +247,20 @@ const updateUser = async (request, response, next) => {
     } else {
         let avatarUrl = null;
         if (request.file) {
-            avatarUrl = 'http://' + request.headers.host + '/images/avatars/' + request.file.filename
+            // avatarUrl = 'http://' + request.headers.host + '/images/avatars/' + request.file.filename;
+            avatarUrl = request.file.location;
         } 
         try {
             if (parseInt(userId) === request.user.id) {
                 await usersQueries.updateUserInfo(userId, request.body, avatarUrl)
+                if (request.file) {
+                    storage.deleteFile(request.user.avatar_url)
+                }
                 next()
             } else {
+                if (request.file) {
+                    storage.deleteFile(request.file.location)
+                }
                 console.log('Not authorized to update')
                 response.status(403)
                 response.json({
@@ -262,6 +271,9 @@ const updateUser = async (request, response, next) => {
             }
             
         } catch (err) {
+            if (request.file) {
+                storage.deleteFile(request.file.location)
+            }
             // Username/email already taken 
             if (err.code === "23505" && err.detail.includes("already exists")) {
                 console.log('Attempt to update user information with a taken email/username')
@@ -278,13 +290,11 @@ const updateUser = async (request, response, next) => {
     }
 }
 
-router.put('/:userId', checkUserLogged, upload.single('avatar'), updateUser, passport.authenticate('local'), (request, response) => {
-    const user = request.user
-    delete user.user_password
+router.put('/:userId', checkUserLogged, storage.upload.single('avatar'), updateUser, passport.authenticate('local'), (request, response) => {
     response.json({
         status: 'success',
         message: 'Successfully update information',
-        payload: user,
+        payload: request.user,
     })
 })
 
@@ -327,12 +337,10 @@ const updatePassword = async (request, response, next) => {
 }
 
 router.patch('/:userId/password', checkUserLogged, updatePassword, passport.authenticate('local'), (request, response) => {
-    const user = request.user
-    delete user.user_password
     response.json({
         status: 'success',
         message: 'Successfully updated the password',
-        payload: user,
+        payload: request.user,
     })
 })
 
@@ -373,12 +381,10 @@ const updateTheme = async (request, response, next) => {
     }
 }
 router.patch('/:userId/theme/:theme', checkUserLogged, updateTheme, passport.authenticate('local'), async (request, response) => {
-    const user = request.user
-    delete user.user_password
     response.json({
         status: 'success',
         message: `Successfully updated the theme`,
-        payload: user,
+        payload: request.user,
     })
 })
 
@@ -398,6 +404,7 @@ router.patch('/:userId/delete', checkUserLogged, async (request, response) => {
         try {
             if (parseInt(userId) === request.user.id) {
                 const deletedUser = await usersQueries.deleteUser(userId)
+                storage.deleteFile(deletedUser.avatar_url)
                 request.logOut()
                 response.json({
                     status: 'success',
@@ -406,11 +413,11 @@ router.patch('/:userId/delete', checkUserLogged, async (request, response) => {
                 })
 
             } else {
-                console.log('Not authorized to update')
+                console.log('Not authorized to delete')
                 response.status(401)
                 response.json({
                     status: 'fail',
-                    message: 'Not authorized to update',
+                    message: 'Not authorized to delete',
                     payload: null,
                 })
             }

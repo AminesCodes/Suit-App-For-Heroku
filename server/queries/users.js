@@ -19,9 +19,9 @@ const formatUsername = username => {
 }
 
 // CREATING THE USER
-const createUser = async (user) => {
+const createUser = async (user, password) => {
     try {
-        let { username, firstname, lastname, password, email } = user;
+        let { username, firstname, lastname, email } = user;
 
         const normalizedUsername = formatUsername(username.toLowerCase());
         firstname = formatStringInputs(firstname);

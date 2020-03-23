@@ -5,7 +5,6 @@ const usersQueries = require('../queries/users');
 
 passport.use(new LocalStrategy({usernameField: 'email', passwordField : 'password'}, 
   async (username, password, done) => {
-    console.log('EMAIL: ', username, '\nPASSWORD: ', password)
   try {
     const user = await usersQueries.getUserByEmail(username);
     if (!user) { // user not found in the database
@@ -13,10 +12,9 @@ passport.use(new LocalStrategy({usernameField: 'email', passwordField : 'passwor
       return done(null, false)
     }
 
-    // const passMatch = await comparePasswords(password, user.user_password);
-    // if (!passMatch) { // user found but passwords don't match
-    if (password !== user.user_password) { // user found but passwords don't match
-    console.log('user found but passwords do not match')
+    const passMatch = await comparePasswords(password, user.user_password);
+    if (!passMatch) { // user found but passwords don't match
+      console.log('user found but passwords do not match')
       return done(null, false)
     }
 
