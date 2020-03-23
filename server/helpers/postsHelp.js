@@ -55,7 +55,8 @@ const processInput = (req, location) => {
       if (!req.file) {
         throw new Error("400__error: missing image file");
       }
-      return "http://" + req.headers.host + "/images/posts/" + req.file.filename;
+      // return "http://" + req.headers.host + "/images/posts/" + req.file.filename;
+      return req.file.location;
 
     case "caption":
       if (!req.body.caption || !req.body.caption.trim()) {

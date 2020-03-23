@@ -6,7 +6,7 @@ GROUP 1: Amine Bensalem, Douglas MacKrell, Savita Madray, Joseph P. Pasaoa
 /* CREATE DATABASE */
 -- DROP DATABASE IF EXISTS suitapp_db;
 -- CREATE DATABASE suitapp_db;
-\c suitapp_db;
+-- \c suitapp_db;
 
 DROP TABLE IF EXISTS events;
 DROP TABLE IF EXISTS reactions;

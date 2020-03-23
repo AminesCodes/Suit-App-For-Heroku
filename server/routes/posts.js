@@ -8,25 +8,29 @@ GROUP 1: Amine Bensalem, Douglas MacKrell, Savita Madray, Joseph P. Pasaoa
 //    external
 const express = require('express');
     const router = express.Router();
-const multer = require('multer');
-    const storage = multer.diskStorage({
-        destination: (request, file, cb) => {
-          cb(null, './public/images/posts');
-        },
-        filename: (request, file, cb) => {
-          const fileName = Date.now() + "-" + file.originalname;
-          cb(null, fileName);
-        }
-    });
-    const fileFilter = (request, file, cb) => {
-      if ((file.mimetype).slice(0, 6) === 'image/') {
-          cb(null, true);
-      } else {
-          cb(null, false);
-      }
-    };
-    const upload = multer({ storage, fileFilter });
+
+const storage = require('../helpers/s3Service');
+
+// const multer = require('multer');
+//     const storage = multer.diskStorage({
+//         destination: (request, file, cb) => {
+//           cb(null, './public/images/posts');
+//         },
+//         filename: (request, file, cb) => {
+//           const fileName = Date.now() + "-" + file.originalname;
+//           cb(null, fileName);
+//         }
+//     });
+//     const fileFilter = (request, file, cb) => {
+//       if ((file.mimetype).slice(0, 6) === 'image/') {
+//           cb(null, true);
+//       } else {
+//           cb(null, false);
+//       }
+//     };
+//     const upload = multer({ storage, fileFilter });
 //    local
+
 const { handleError, checkDoesUserExist } = require('../helpers/globalHelp.js');
 const { processInput } = require('../helpers/postsHelp.js');
 const { 
@@ -123,7 +127,7 @@ router.get("/:postId", async (req, res, next) => {
 });
 
 //    createPost: create a single post
-router.post("/add", upload.single("posts"), async (req, res, next) => {
+router.post("/add", storage.upload.single("posts"), async (req, res, next) => {
     try {
       const imageUrl = processInput(req, "imageUrl");
       const { caption, formattedHashtags } = processInput(req, "caption");
@@ -182,6 +186,7 @@ router.patch("/delete/:postId", async (req, res, next) => {
       
       if (currUserId === req.user.id) {
         const response = await deletePost(postId, currUserId);
+        storage.deleteFile(response.image_url)
         res.json({
             status: "success",
             message: `post ${postId} deleted`,
