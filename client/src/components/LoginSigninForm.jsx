@@ -160,7 +160,7 @@ export default class LoginSigninFrom extends React.PureComponent {
                 </div>
                 {signinFields}
                 <div className='j-d-sm-flex d-sm-flex justify-content-between col-md-12'>
-                    <button className='d-sm-block'>{this.state.formFunctionality[0]}</button>
+                    <button className='d-sm-block btn btn-primary'>{this.state.formFunctionality[0]}</button>
                     {spinner}
                     <button className='d-sm-block btn btn-link' onClick={this.handleSigninBtn}>{this.state.formFunctionality[1]}<strong>{this.state.formFunctionality[2]}</strong></button>
                 </div>
