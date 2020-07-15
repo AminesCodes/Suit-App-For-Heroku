@@ -107,10 +107,16 @@ export default class Persona extends Component {
   }
 
   getRandomFollowers = (arr, num, tracker, max) => {
-    const randomId = Math.floor(Math.random() * max)
-    if (arr.length === num) {
+    if (arr.length === num || max === 0) {
       return
     }
+    if (num >= max) {
+      for (let i=0; i<max; i++) {
+        arr.push(i)
+      }
+      return
+    }
+    const randomId = Math.floor(Math.random() * max)
     if (tracker[randomId]) {
       this.getRandomFollowers(arr, num, tracker, max)
     } else {
