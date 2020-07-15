@@ -88,7 +88,7 @@ router.get('/:postId', async (request, response) => {
 router.post('/:postId/:userId', async (request, response) => {
     const postId = request.params.postId;
     const userId = request.params.userId;
-    const body = request.body;
+    const body = request.body.body;
     const validPostId = isValidId(postId);
     const validUserId = isValidId(userId);
 
