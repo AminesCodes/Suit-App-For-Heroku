@@ -35,7 +35,7 @@ class App extends Component {
     try {
       const { data } = await axios.get('/&api&/users/isUserLoggedIn')
       this.setState({ loggedUser: data.payload })
-      console.log('Logged user in backend: ', data.payload)
+      // console.log('Logged user in backend: ', data.payload)
       
     } catch (err) {
       console.log('ERROR', err)
